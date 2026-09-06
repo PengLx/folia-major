@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PlayerState, type SongResult } from '../../../src/types';
 import { COMMAND_PALETTE_COMMANDS, getAvailableCommandPaletteCommands, getCommandPaletteMatches, getQueueSongMatches } from '../../../src/components/command-palette/commandRegistry';
 import { sleepTimerSurface } from '../../../src/components/command-palette/surfaces/sleepTimerSurface';
+import { latticePosterTintSurface } from '../../../src/components/command-palette/surfaces/latticePosterTintSurface';
 import type { CommandPaletteContext } from '../../../src/components/command-palette/types';
 import { buildExecuteShortcutIndex, resolveExecuteShortcut } from '../../../src/components/command-palette/executeShortcuts';
 
@@ -95,6 +96,14 @@ const createContext = (overrides: CommandPaletteContextOverrides = {}): CommandP
             toggleAlwaysShowPlayerBackButton: vi.fn(),
             toggleLatticeVignette: vi.fn(),
             toggleLatticeAutoFocusOnSongChange: vi.fn(),
+            latticePosterTintEnabled: true,
+            latticePosterTintUseCustomColor: false,
+            latticePosterTintColor: '#161419',
+            latticePosterTintIntensity: 0.5,
+            setLatticePosterTintEnabled: vi.fn(),
+            setLatticePosterTintUseCustomColor: vi.fn(),
+            setLatticePosterTintColor: vi.fn(),
+            setLatticePosterTintIntensity: vi.fn(),
             toggleAlwaysShowTrackSwitchButtons: vi.fn(),
             toggleAutoPlayOnLaunch: vi.fn(),
             toggleAlwaysShowMainWindowTitlebar: vi.fn(),
@@ -1033,5 +1042,15 @@ describe('lattice focus command', () => {
         expect(getAvailableCommandPaletteCommands(createContext({
             scope: { view: 'lattice', filter: null }, navigation: { canFocusLatticeCurrentSong: false },
         })).some(command => command.id === 'lattice-focus-current')).toBe(false);
+    });
+});
+
+describe('lattice poster tint command', () => {
+    it('opens the dedicated control surface and is searchable in Chinese', () => {
+        const [match] = getCommandPaletteMatches('海报叠色', createContext());
+
+        expect(match.command.id).toBe('lattice-poster-tint');
+        expect(match.command.requiresInput).toBe(true);
+        expect(match.command.surface).toBe(latticePosterTintSurface);
     });
 });

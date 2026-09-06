@@ -30,6 +30,7 @@ import { useSleepTimerStore } from '../stores/useSleepTimerStore';
 import { useTypographySettingsStore } from '../stores/useTypographySettingsStore';
 import { useVisualizerSettingsStore } from '../stores/useVisualizerSettingsStore';
 import { useLyricSegmentationStore } from '../stores/useLyricSegmentationStore';
+import { useLatticeSettingsStore } from '../stores/useLatticeSettingsStore';
 import type { LyricSegmentationActions } from '../components/app/playback/createLyricSegmentationActions';
 
 // src/hooks/useCommandPaletteContext.ts
@@ -116,6 +117,12 @@ export const useCommandPaletteContext = (
         sleepTimerMinutes: state.sleepTimerMinutes,
         sleepTimerDeadlineMs: state.sleepTimerDeadlineMs,
     })));
+    const latticeSignals = useLatticeSettingsStore(useShallow(state => ({
+        latticePosterTintEnabled: state.latticePosterTintEnabled,
+        latticePosterTintUseCustomColor: state.latticePosterTintUseCustomColor,
+        latticePosterTintColor: state.latticePosterTintColor,
+        latticePosterTintIntensity: state.latticePosterTintIntensity,
+    })));
     const audioSignals = useAudioSettingsStore(useShallow(state => ({
         volume: state.volume,
         isMuted: state.isMuted,
@@ -185,7 +192,7 @@ export const useCommandPaletteContext = (
         ...valueDeps,
         ambient,
         settingsSignals, chromeSignals, desktopSignals, automixSignals,
-        sleepTimerSignals, audioSignals, visualizerSignals,
+        sleepTimerSignals, latticeSignals, audioSignals, visualizerSignals,
         lyricStaffPolicy, lyricStaffAbsorbMode, personalFmSelection, view, commandFilter, canAddCurrentSongToPlaylist,
         lyricSegmentationRecord, lyricSegmentationActions, latticeFocusAction,
     ]);

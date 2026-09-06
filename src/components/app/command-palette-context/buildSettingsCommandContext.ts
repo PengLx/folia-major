@@ -51,6 +51,7 @@ export const buildSettingsCommandContext = (
     const sleepTimer = useSleepTimerStore.getState();
     const modal = useSettingsModalStore.getState();
     const themeQuickEditor = useThemeQuickEditorStore.getState();
+    const lattice = useLatticeSettingsStore.getState();
 
     return {
         openSettings: modal.openSettings,
@@ -79,6 +80,14 @@ export const buildSettingsCommandContext = (
         toggleLatticeAutoFocusOnSongChange: () => useLatticeSettingsStore.getState().handleToggleAutoFocusOnSongChange(
             !useLatticeSettingsStore.getState().autoFocusOnSongChange,
         ),
+        latticePosterTintEnabled: lattice.latticePosterTintEnabled,
+        latticePosterTintUseCustomColor: lattice.latticePosterTintUseCustomColor,
+        latticePosterTintColor: lattice.latticePosterTintColor,
+        latticePosterTintIntensity: lattice.latticePosterTintIntensity,
+        setLatticePosterTintEnabled: lattice.handleToggleLatticePosterTint,
+        setLatticePosterTintUseCustomColor: lattice.handleToggleLatticePosterTintCustomColor,
+        setLatticePosterTintColor: lattice.handleSetLatticePosterTintColor,
+        setLatticePosterTintIntensity: lattice.handleSetLatticePosterTintIntensity,
         toggleAlwaysShowTrackSwitchButtons: () => chrome.handleToggleAlwaysShowTrackSwitchButtons(
             !usePlayerChromeSettingsStore.getState().alwaysShowTrackSwitchButtons,
         ),

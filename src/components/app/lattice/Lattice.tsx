@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { MotionValue } from 'framer-motion';
@@ -57,6 +57,10 @@ export default function Lattice({
     countRender('Lattice');
     const { t } = useTranslation();
     const vignette = useLatticeSettingsStore(state => state.latticeVignette);
+    const posterTintEnabled = useLatticeSettingsStore(state => state.latticePosterTintEnabled);
+    const posterTintUseCustomColor = useLatticeSettingsStore(state => state.latticePosterTintUseCustomColor);
+    const posterTintColor = useLatticeSettingsStore(state => state.latticePosterTintColor);
+    const posterTintIntensity = useLatticeSettingsStore(state => state.latticePosterTintIntensity);
     const tiles = useMemo(() => buildLatticeTiles({ queue, currentSong }), [currentSong, queue]);
     // App rebuilds these on every render of its own, and the wall hands them to every poster on
     // screen. Given a permanent identity here they stop being a reason for those posters to render.
@@ -72,7 +76,14 @@ export default function Lattice({
             currentTime={currentTime} duration={playbackDuration} onSeek={onSeek} isDaylight={isDaylight}>
         <LatticeLyricsProvider source={lyricSource} songKey={currentSong ? getPlaybackSongKey(currentSong) : ''}
             keywordColoringEnabled={lyricKeywordColoringEnabled}>
-        <section className={`lattice-root ${isDaylight ? 'is-daylight' : ''} ${vignette ? 'has-vignette' : ''}`} aria-label={t('home.latticeLabel')}>
+        <section
+            className={`lattice-root ${isDaylight ? 'is-daylight' : ''} ${vignette ? 'has-vignette' : ''} ${posterTintEnabled ? 'has-poster-tint' : ''} ${posterTintUseCustomColor ? 'uses-custom-poster-tint' : ''}`}
+            style={{
+                '--lattice-poster-tint-color': posterTintColor,
+                '--lattice-poster-tint-intensity': posterTintIntensity,
+            } as CSSProperties}
+            aria-label={t('home.latticeLabel')}
+        >
             <PosterWall
                 tiles={tiles}
                 currentSong={currentSong}

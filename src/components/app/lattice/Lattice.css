@@ -7,6 +7,9 @@
     --lattice-expanded-shadow: rgb(0 0 0 / 74%);
     --lattice-chrome-shadow: rgb(0 0 0 / 55%);
     --lattice-focus-lift: 0 12px 32px rgb(0 0 0 / 45%);
+    --lattice-poster-tint-intensity: 0.5;
+    --lattice-poster-tint-effective-opacity: var(--lattice-poster-tint-intensity);
+    --lattice-poster-tint-color: #161419;
     position: absolute;
     inset: 0;
     overflow: hidden;
@@ -29,6 +32,7 @@
     --lattice-expanded-shadow: rgb(0 0 0 / 25%);
     --lattice-chrome-shadow: rgb(255 255 255 / 55%);
     --lattice-focus-lift: 0 12px 32px rgb(0 0 0 / 25%);
+    --lattice-poster-tint-effective-opacity: calc(var(--lattice-poster-tint-intensity) * 0.72);
 }
 
 /* Poster content stays square, while independent navigation and utility chrome keeps its shape. */
@@ -196,6 +200,36 @@
     background: linear-gradient(180deg, rgb(var(--lattice-shade-rgb) / 5%) 34%, rgb(var(--lattice-shade-rgb) / 24%) 56%, rgb(var(--lattice-shade-rgb) / 92%) 100%);
 }
 
+/* Theme-derived colour quiets the background cards without muting the playing or selected one. */
+.lattice-poster-tint {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--bg-color, #070707) 78%, var(--text-accent, #fd5c47)),
+        color-mix(in srgb, var(--bg-color, #070707) 84%, var(--text-secondary, #6a48ff))
+    );
+    opacity: 0;
+    transition: opacity 260ms ease;
+}
+
+.lattice-root.has-poster-tint .lattice-poster-tint {
+    opacity: var(--lattice-poster-tint-effective-opacity);
+}
+
+.lattice-root.uses-custom-poster-tint .lattice-poster-tint {
+    background: var(--lattice-poster-tint-color);
+}
+
+.lattice-poster.is-current .lattice-poster-tint,
+.lattice-poster.is-focused .lattice-poster-tint,
+.lattice-poster:hover .lattice-poster-tint,
+.lattice-poster:focus-visible .lattice-poster-tint {
+    opacity: 0;
+}
+
 .lattice-poster.is-expanded {
     --lattice-poster-elevation: 0 42px 110px var(--lattice-expanded-shadow);
     /* The identity filter on the base rule still buys a full filter pass every frame, and the Pixi
@@ -346,7 +380,8 @@
 
 @media (prefers-reduced-motion: reduce) {
     .lattice-poster,
-    .lattice-poster::after { transition: none; }
+    .lattice-poster::after,
+    .lattice-poster-tint { transition: none; }
 }
 
 @media (max-width: 640px) {

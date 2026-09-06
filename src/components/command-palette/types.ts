@@ -196,6 +196,14 @@ export type CommandPaletteSettingsContext = {
     toggleAlwaysShowPlayerBackButton: () => void;
     toggleLatticeVignette: () => void;
     toggleLatticeAutoFocusOnSongChange: () => void;
+    latticePosterTintEnabled: boolean;
+    latticePosterTintUseCustomColor: boolean;
+    latticePosterTintColor: string;
+    latticePosterTintIntensity: number;
+    setLatticePosterTintEnabled: (enabled: boolean) => void;
+    setLatticePosterTintUseCustomColor: (enabled: boolean) => void;
+    setLatticePosterTintColor: (color: string) => void;
+    setLatticePosterTintIntensity: (intensity: number) => void;
     toggleAlwaysShowTrackSwitchButtons: () => void;
     toggleAlwaysShowMainWindowTitlebar: () => void;
     /** Lab switch: whether the restored session starts playing by itself on launch. */

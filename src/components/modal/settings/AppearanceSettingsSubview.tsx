@@ -874,6 +874,7 @@ const AppearanceSettingsSubview: React.FC<AppearanceSettingsSubviewProps> = ({
                 <LatticeSettingsSection
                     settingsCardClass={settingsCardClass}
                     toggleOffBackgroundClass={toggleOffBackgroundClass}
+                    isDaylight={isDaylight}
                     theme={theme}
                 />
             </SettingsAnchor>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
 import type { Theme } from '../../../types';
 import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore';
+import LatticePosterTintControls from '../../shared/LatticePosterTintControls';
 
 // src/components/modal/settings/LatticeSettingsSection.tsx
 // 队列拼贴（海报墙）的外观设置，挂在外观页里。读 store 而不是接一串 props：这一区只属于
@@ -11,17 +13,29 @@ import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore
 type LatticeSettingsSectionProps = {
     settingsCardClass: string;
     toggleOffBackgroundClass: string;
+    isDaylight: boolean;
     theme?: Theme;
 };
 
 const LatticeSettingsSection: React.FC<LatticeSettingsSectionProps> = ({
     settingsCardClass,
     toggleOffBackgroundClass,
+    isDaylight,
     theme,
 }) => {
     const { t } = useTranslation();
     const latticeVignette = useLatticeSettingsStore(state => state.latticeVignette);
     const handleToggleLatticeVignette = useLatticeSettingsStore(state => state.handleToggleLatticeVignette);
+    const posterTint = useLatticeSettingsStore(useShallow(state => ({
+        enabled: state.latticePosterTintEnabled,
+        useCustomColor: state.latticePosterTintUseCustomColor,
+        color: state.latticePosterTintColor,
+        intensity: state.latticePosterTintIntensity,
+        onEnabledChange: state.handleToggleLatticePosterTint,
+        onUseCustomColorChange: state.handleToggleLatticePosterTintCustomColor,
+        onColorChange: state.handleSetLatticePosterTintColor,
+        onIntensityChange: state.handleSetLatticePosterTintIntensity,
+    })));
 
     return (
         <div className={`p-4 rounded-xl border space-y-4 ${settingsCardClass}`}>
@@ -43,6 +57,13 @@ const LatticeSettingsSection: React.FC<LatticeSettingsSectionProps> = ({
                 >
                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${latticeVignette ? 'translate-x-6' : 'translate-x-0'}`} />
                 </button>
+            </div>
+            <div className="border-t pt-4">
+                <LatticePosterTintControls
+                    {...posterTint}
+                    isDaylight={isDaylight}
+                    theme={theme}
+                />
             </div>
         </div>
     );
