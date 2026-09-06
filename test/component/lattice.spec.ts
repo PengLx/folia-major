@@ -293,6 +293,32 @@ test('the wall tool panel focuses the current song', async ({ mount, page }) => 
     await expect(focusButton).toBeDisabled();
 });
 
+test('auto-focus toggle leaves browsing position alone until the next enabled track change', async ({ mount, page }) => {
+    const wall = await mount('lattice');
+    await settle(page);
+    const field = wall.locator('.lattice-field');
+    const toolsButton = wall.getByRole('button', { name: 'Lattice tools', exact: true });
+    const autoFocusToggle = wall.getByRole('menuitemcheckbox', { name: 'Auto-focus on track change', exact: true });
+
+    await toolsButton.click();
+    await expect(autoFocusToggle).toBeChecked();
+    await autoFocusToggle.click();
+    await expect(autoFocusToggle).not.toBeChecked();
+    await field.dispatchEvent('wheel', { deltaX: 600, deltaY: 400 });
+    const browsingX = await cameraX(wall);
+
+    await wall.getByRole('button', { name: 'Next track', exact: true }).click();
+    await settle(page);
+    expect(await cameraX(wall)).toBeCloseTo(browsingX, 1);
+    await expect(wall.locator('.lattice-poster.is-expanded')).toHaveAttribute('aria-label', 'Poster 0 · Artist');
+
+    await toolsButton.click();
+    await autoFocusToggle.click();
+    await wall.getByRole('button', { name: 'Next track', exact: true }).click();
+    await expect(wall.locator('.lattice-poster.is-expanded')).toHaveAttribute('aria-label', 'Poster 2 · Artist');
+    await expectExpandedCentered(wall);
+});
+
 test('publishes when the current playing card leaves and re-enters the viewport', async ({ mount, page }) => {
     const wall = await mount('lattice');
     const visibility = wall.locator('[data-current-song-poster-visible]');

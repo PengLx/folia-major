@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Command, Crosshair, ListMusic, Settings2, X } from 'lucide-react';
+import { Command, Crosshair, Focus, ListMusic, Settings2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLatticeControlsStore } from '../../../stores/useLatticeControlsStore';
+import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore';
 import { openCommandPalette, openCommandPaletteCommand } from '../../../stores/useAppViewStore';
 import { PRIMARY_MODIFIER_LABEL } from '../../../utils/platform';
 import { SlideActionButton } from '../../shared/SlideActionButton';
@@ -16,6 +17,8 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
     const [isOpen, setIsOpen] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
     const focusCurrentSong = useLatticeControlsStore(state => state.focusCurrentSong);
+    const autoFocusOnSongChange = useLatticeSettingsStore(state => state.autoFocusOnSongChange);
+    const handleToggleAutoFocusOnSongChange = useLatticeSettingsStore(state => state.handleToggleAutoFocusOnSongChange);
     const queueShortcut = `${PRIMARY_MODIFIER_LABEL}+P`;
 
     useEffect(() => {
@@ -77,6 +80,19 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
                             <Crosshair aria-hidden="true" />
                             <span>{t('home.latticeFocusCurrent')}</span>
                             <kbd aria-hidden="true">Shift + ; + C</kbd>
+                        </button>
+                        <button
+                            type="button"
+                            role="menuitemcheckbox"
+                            aria-checked={autoFocusOnSongChange}
+                            className="lattice-tools-action"
+                            onClick={() => handleToggleAutoFocusOnSongChange(!autoFocusOnSongChange)}
+                        >
+                            <Focus aria-hidden="true" />
+                            <span>{t('home.latticeAutoFocusOnSongChange')}</span>
+                            <span className={`lattice-tools-toggle ${autoFocusOnSongChange ? 'is-on' : ''}`} aria-hidden="true">
+                                <span />
+                            </span>
                         </button>
                         <button
                             type="button"

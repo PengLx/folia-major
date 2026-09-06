@@ -195,6 +195,7 @@ export type CommandPaletteSettingsContext = {
     canStartPlayerBottomBarPositioning: boolean;
     toggleAlwaysShowPlayerBackButton: () => void;
     toggleLatticeVignette: () => void;
+    toggleLatticeAutoFocusOnSongChange: () => void;
     toggleAlwaysShowTrackSwitchButtons: () => void;
     toggleAlwaysShowMainWindowTitlebar: () => void;
     /** Lab switch: whether the restored session starts playing by itself on launch. */

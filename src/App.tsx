@@ -41,6 +41,7 @@ import { createOnlineRecoveryController } from './components/app/playback/create
 import { persistPlaybackCache } from './components/app/playback/persistPlaybackCache';
 import { useAppOverlaysModel } from './components/app/overlays/useAppOverlaysModel';
 import { resolveNextUpTrack } from './components/app/overlays/now-playing-toast/resolveNextUpTrack';
+import { shouldShowNowPlayingToast } from './components/app/overlays/now-playing-toast/nowPlayingToastVisibility';
 import {
     createSearchAlbumCollection,
     createSearchArtistCollection,
@@ -1242,12 +1243,15 @@ export default function App() {
      *
      * One definition for two readers - the overlay model, which mounts the card, and the track-end
      * countdown below, which is only worth running while something can show its result. The lyrics
-     * page always allows it; the home page is opt-in, and that opt-in is the whole rule: how the app
-     * arrived at the home page does not enter into it, so a cold start that lands there and a walk
-     * back from the lyrics page behave the same.
+     * player and Lattice pages always allow it; the home page is opt-in, and that opt-in is the
+     * whole rule: how the app arrived at the home page does not enter into it, so a cold start that
+     * lands there and a walk back from another page behave the same.
      */
-    const stageTrackPillOnScreen = stageTrackPillMode !== 'never'
-        && (currentView === 'player' || (currentView === 'home' && stageTrackPillOnHome));
+    const stageTrackPillOnScreen = shouldShowNowPlayingToast({
+        mode: stageTrackPillMode,
+        view: currentView,
+        showOnHome: stageTrackPillOnHome,
+    });
 
     /**
      * Open the right-hand panel on its song card - what clicking the now playing card does once you

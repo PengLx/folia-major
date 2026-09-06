@@ -65,6 +65,7 @@ function LatticeProbe() {
             } : null,
         }} />
         <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 100 }}>
+            <button onClick={() => setCurrentSong(queue[(queue.indexOf(currentSong!) + 1) % queue.length])}>Next track</button>
             <button onClick={() => setSongs(value => [...value].reverse())}>Reverse queue</button>
             <button onClick={() => setSongs(value => value.filter(song => song.id !== '3'))}>Remove poster 3</button>
             <button onClick={() => { setSongs([]); setCurrentSong(null); }}>Clear queue</button>

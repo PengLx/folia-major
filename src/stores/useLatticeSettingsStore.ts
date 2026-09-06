@@ -1,20 +1,29 @@
 import { create } from 'zustand';
-import { getStoredBoolean } from './storagePrimitives';
+import { getStoredBoolean, setStoredBoolean } from './storagePrimitives';
 
 // src/stores/useLatticeSettingsStore.ts
-// How the queue collage surface looks. Deliberately separate from useLatticeControlsStore: that one
-// publishes the mounted wall's runtime actions, this one holds what the user configured about it and
-// therefore travels with the appearance config.
+// Persistent queue-collage preferences. Deliberately separate from useLatticeControlsStore: that
+// store only publishes runtime actions from the currently mounted wall.
+
+const LATTICE_VIGNETTE_KEY = 'lattice_vignette';
+const LATTICE_AUTO_FOCUS_ON_SONG_CHANGE_KEY = 'lattice_auto_focus_on_song_change';
 
 export type LatticeSettingsState = {
     latticeVignette: boolean;
+    autoFocusOnSongChange: boolean;
     handleToggleLatticeVignette: (enabled: boolean) => void;
+    handleToggleAutoFocusOnSongChange: (enabled: boolean) => void;
 };
 
 export const useLatticeSettingsStore = create<LatticeSettingsState>(set => ({
-    latticeVignette: getStoredBoolean('lattice_vignette', true),
+    latticeVignette: getStoredBoolean(LATTICE_VIGNETTE_KEY, true),
+    autoFocusOnSongChange: getStoredBoolean(LATTICE_AUTO_FOCUS_ON_SONG_CHANGE_KEY, true),
     handleToggleLatticeVignette: (enabled) => {
         set({ latticeVignette: enabled });
-        if (typeof window !== 'undefined') localStorage.setItem('lattice_vignette', enabled.toString());
+        setStoredBoolean(LATTICE_VIGNETTE_KEY, enabled);
+    },
+    handleToggleAutoFocusOnSongChange: (enabled) => {
+        set({ autoFocusOnSongChange: enabled });
+        setStoredBoolean(LATTICE_AUTO_FOCUS_ON_SONG_CHANGE_KEY, enabled);
     },
 }));

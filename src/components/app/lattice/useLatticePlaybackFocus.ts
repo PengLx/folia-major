@@ -1,6 +1,7 @@
 import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { useStableCallbacks } from '../../../hooks/useStableCallbacks';
 import { useLatticeControlsStore } from '../../../stores/useLatticeControlsStore';
+import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore';
 import type { SongResult } from '../../../types';
 import { getPlaybackSongKey } from '../../../utils/appPlaybackGuards';
 import { layoutExpandedBlock, locateNearestInstance, type LatticeGeometry, type QueueInstance, type WallMetrics } from './layout';
@@ -37,6 +38,7 @@ export const useLatticePlaybackFocus = ({
     panTo,
 }: PlaybackFocusOptions) => {
     const lastFocusedSongKeyRef = useRef<string | null>(null);
+    const autoFocusOnSongChange = useLatticeSettingsStore(state => state.autoFocusOnSongChange);
 
     const currentSongKey = currentSong ? getPlaybackSongKey(currentSong) : null;
     // Permanent identity, dispatching to this render's closure. The wall publishes this action to
@@ -73,8 +75,11 @@ export const useLatticePlaybackFocus = ({
         // The wall opens already centred on what is playing; later song changes fly there.
         const isEntry = lastFocusedSongKeyRef.current === null;
         lastFocusedSongKeyRef.current = currentSongKey;
+        // Consume the song change while following is disabled. Turning the setting back on should
+        // not steal the viewport immediately; the next song change is the next follow opportunity.
+        if (!autoFocusOnSongChange) return;
         focusCurrentSong({ instant: isEntry });
-    }, [currentSongKey, focusCurrentSong, ready, tiles]);
+    }, [autoFocusOnSongChange, currentSongKey, focusCurrentSong, ready, tiles]);
 
     const canFocus = Boolean(currentSongKey && tiles.some(tile => tile.id === currentSongKey));
     useEffect(() => useLatticeControlsStore.getState().registerFocus(canFocus ? focusCurrentSong : null), [canFocus, focusCurrentSong]);

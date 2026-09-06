@@ -76,6 +76,9 @@ export const buildSettingsCommandContext = (
         toggleLatticeVignette: () => useLatticeSettingsStore.getState().handleToggleLatticeVignette(
             !useLatticeSettingsStore.getState().latticeVignette,
         ),
+        toggleLatticeAutoFocusOnSongChange: () => useLatticeSettingsStore.getState().handleToggleAutoFocusOnSongChange(
+            !useLatticeSettingsStore.getState().autoFocusOnSongChange,
+        ),
         toggleAlwaysShowTrackSwitchButtons: () => chrome.handleToggleAlwaysShowTrackSwitchButtons(
             !usePlayerChromeSettingsStore.getState().alwaysShowTrackSwitchButtons,
         ),
