@@ -393,16 +393,10 @@ test('chrome has three quiet controls at rest and reveals details on hover witho
     const chromeBox = (await chrome.boundingBox())!;
     const copyBox = (await wall.locator('.is-expanded .lattice-poster-copy').boundingBox())!;
     expect(chromeBox.x).toBeCloseTo(copyBox.x, 0);
-    const posterBox = (await wall.locator('.is-expanded').boundingBox())!;
-    const close = wall.locator('.lattice-poster-close');
-    const closeBox = (await close.boundingBox())!;
-    expect(closeBox.x).toBeGreaterThan(posterBox.x + posterBox.width * 0.8);
-    expect(closeBox.y).toBeLessThan(posterBox.y + posterBox.height * 0.15);
-    await expect(chrome.locator('.lattice-poster-close')).toHaveCount(0);
     await wall.screenshot({ path: 'test-results/lattice-chrome-revealed.png' });
     await page.mouse.move(0, 0);
     await expect(chrome).not.toHaveClass(/is-revealed/);
-    await close.click();
+    await wall.locator('.lattice-field').press('Escape');
     await expect(wall.locator('.is-expanded')).toHaveCount(0);
 });
 

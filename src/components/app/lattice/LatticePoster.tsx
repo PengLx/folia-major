@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { lazy, memo, Suspense } from 'react';
 import { motion, type MotionValue } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +38,6 @@ type LatticePosterProps = {
     onTogglePlayback: () => void;
     onSeek: (time: number) => void;
     onOpenPlayer: () => void;
-    onClose: () => void;
 };
 
 // How far above its slot a landing tile starts, in world units.
@@ -102,7 +100,6 @@ function LatticePoster({
     onTogglePlayback,
     onSeek,
     onOpenPlayer,
-    onClose,
 }: LatticePosterProps) {
     countRender('LatticePoster');
     const { t } = useTranslation();
@@ -228,12 +225,6 @@ function LatticePoster({
                 <strong>{tile.title}</strong>
                 <small>{tile.artist}</small>
             </span>}
-            {expanded && (
-                <button type="button" className="lattice-poster-close" onClick={onClose}
-                    aria-label={t('home.latticeClose')} title={t('home.latticeClose')}>
-                    <X size={18} />
-                </button>
-            )}
             {expanded && (
                 <motion.div
                     className="lattice-poster-controls"

@@ -333,7 +333,6 @@ export default function PosterWall({
                             onTogglePlayback={onTogglePlayback}
                             onSeek={onSeek}
                             onOpenPlayer={onOpenPlayer}
-                            onClose={collapsePoster}
                         />
                     );
                 })}

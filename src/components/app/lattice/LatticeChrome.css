@@ -13,27 +13,6 @@
     flex-direction: column;
     gap: 10px;
 }
-.lattice-poster-close {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    z-index: 3;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    color: inherit;
-    background: rgb(var(--lattice-shade-rgb) / 66%);
-    backdrop-filter: blur(16px);
-    cursor: pointer;
-    opacity: 0.65;
-}
-.lattice-root .lattice-poster-close { border-radius: 50% !important; }
-.lattice-poster-close:hover, .lattice-poster-close:focus-visible { opacity: 1; }
-.lattice-poster-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-
 /* The extra slots sit inline after play and wipe open sideways, so no row is added or removed. */
 .lattice-chrome-details {
     display: grid;
@@ -72,8 +51,6 @@
     .lattice-root .lattice-chrome button { border-radius: 20px !important; }
     .lattice-progress { margin-right: 28px; }
     .lattice-chrome button { width: 86px; height: 86px; }
-    .lattice-poster-close { top: 24px; right: 32px; width: 86px; height: 86px; }
-    .lattice-poster-close svg { width: 30px; height: 30px; }
     .lattice-chrome button svg { width: 30px; height: 30px; }
     .lattice-chrome-actions { gap: 4px; }
     .lattice-chrome-transport { min-height: 86px; gap: 4px; }
