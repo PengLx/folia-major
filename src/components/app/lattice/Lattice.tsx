@@ -57,6 +57,7 @@ export default function Lattice({
     countRender('Lattice');
     const { t } = useTranslation();
     const vignette = useLatticeSettingsStore(state => state.latticeVignette);
+    const lightsOn = useLatticeSettingsStore(state => state.latticeLightsOn);
     const posterTintEnabled = useLatticeSettingsStore(state => state.latticePosterTintEnabled);
     const posterTintUseCustomColor = useLatticeSettingsStore(state => state.latticePosterTintUseCustomColor);
     const posterTintColor = useLatticeSettingsStore(state => state.latticePosterTintColor);
@@ -77,7 +78,7 @@ export default function Lattice({
         <LatticeLyricsProvider source={lyricSource} songKey={currentSong ? getPlaybackSongKey(currentSong) : ''}
             keywordColoringEnabled={lyricKeywordColoringEnabled}>
         <section
-            className={`lattice-root ${isDaylight ? 'is-daylight' : ''} ${vignette ? 'has-vignette' : ''} ${posterTintEnabled ? 'has-poster-tint' : ''} ${posterTintUseCustomColor ? 'uses-custom-poster-tint' : ''}`}
+            className={`lattice-root ${isDaylight ? 'is-daylight' : ''} ${vignette ? 'has-vignette' : ''} ${lightsOn ? '' : 'is-lights-out'} ${posterTintEnabled ? 'has-poster-tint' : ''} ${posterTintUseCustomColor ? 'uses-custom-poster-tint' : ''}`}
             style={{
                 '--lattice-poster-tint-color': posterTintColor,
                 '--lattice-poster-tint-intensity': posterTintIntensity,

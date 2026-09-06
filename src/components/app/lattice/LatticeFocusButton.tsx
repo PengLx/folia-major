@@ -20,6 +20,8 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
     const focusCurrentSong = useLatticeControlsStore(state => state.focusCurrentSong);
     const autoFocusOnSongChange = useLatticeSettingsStore(state => state.autoFocusOnSongChange);
     const handleToggleAutoFocusOnSongChange = useLatticeSettingsStore(state => state.handleToggleAutoFocusOnSongChange);
+    const lightsOn = useLatticeSettingsStore(state => state.latticeLightsOn);
+    const handleToggleLatticeLights = useLatticeSettingsStore(state => state.handleToggleLatticeLights);
     const queueShortcut = `${PRIMARY_MODIFIER_LABEL}+P`;
 
     useEffect(() => {
@@ -116,6 +118,17 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
                             <kbd>{queueShortcut}</kbd>
                         </button>
                         <div className="lattice-tools-help-section" role="none">
+                            <button
+                                type="button"
+                                role="menuitemcheckbox"
+                                aria-checked={lightsOn}
+                                aria-label={t('home.latticeLights')}
+                                className="lattice-tools-lights-toggle"
+                                onClick={() => handleToggleLatticeLights(!lightsOn)}
+                            >
+                                <span className={lightsOn ? 'is-active' : ''}>{t('home.latticeLightsOn')}</span>
+                                <span className={lightsOn ? '' : 'is-active'}>{t('home.latticeLightsOff')}</span>
+                            </button>
                             <button
                                 type="button"
                                 role="menuitem"

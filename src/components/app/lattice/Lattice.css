@@ -200,6 +200,29 @@
     background: linear-gradient(180deg, rgb(var(--lattice-shade-rgb) / 5%) 34%, rgb(var(--lattice-shade-rgb) / 24%) 56%, rgb(var(--lattice-shade-rgb) / 92%) 100%);
 }
 
+.lattice-poster-lights-out {
+    position: absolute;
+    inset: 0;
+    /* Lights-out covers the complete poster, including its copy and badge. */
+    z-index: 5;
+    pointer-events: none;
+    background: #000;
+    opacity: 0;
+    transition: opacity 260ms ease;
+}
+
+.lattice-root.is-lights-out .lattice-poster:not(.is-current) .lattice-poster-lights-out {
+    opacity: 0.82;
+}
+
+.lattice-root.is-daylight.is-lights-out .lattice-poster:not(.is-current) .lattice-poster-lights-out {
+    background: #fff;
+}
+
+.lattice-root.is-lights-out .lattice-poster:not(.is-current) .lattice-poster-tint {
+    opacity: 0;
+}
+
 /* Theme-derived colour quiets the background cards without muting the playing or selected one. */
 .lattice-poster-tint {
     position: absolute;
@@ -365,7 +388,8 @@
 @media (prefers-reduced-motion: reduce) {
     .lattice-poster,
     .lattice-poster::after,
-    .lattice-poster-tint { transition: none; }
+    .lattice-poster-tint,
+    .lattice-poster-lights-out { transition: none; }
 }
 
 @media (max-width: 640px) {

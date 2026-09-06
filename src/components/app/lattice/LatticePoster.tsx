@@ -212,6 +212,7 @@ function LatticePoster({
             aria-label={`${tile.title} · ${tile.artist}`}
         >
             <span className="lattice-poster-shade" />
+            <span className="lattice-poster-lights-out" />
             <span className="lattice-poster-tint" />
             <span className={`lattice-poster-badge ${isCurrent ? 'is-current' : ''}`}>
                 {isCurrent && <>{t('home.latticeBadgeNow')} · </>}

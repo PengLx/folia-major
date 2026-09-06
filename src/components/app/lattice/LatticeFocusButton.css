@@ -114,11 +114,44 @@
 
 .lattice-tools-help-section {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     margin-top: 4px;
     padding-top: 8px;
     border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
+.lattice-tools-lights-toggle {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 999px;
+    color: inherit;
+    background: rgb(255 255 255 / 6%);
+    cursor: pointer;
+}
+
+.lattice-tools-lights-toggle span {
+    min-width: 48px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: color-mix(in srgb, currentColor 58%, transparent);
+    font-size: 11px;
+    font-weight: 650;
+    text-align: center;
+    transition: color 160ms ease, background-color 160ms ease;
+}
+
+.lattice-tools-lights-toggle span.is-active {
+    color: var(--text-primary, #f7f4ee);
+    background: var(--text-accent, currentColor);
+}
+
+.lattice-tools.is-daylight .lattice-tools-lights-toggle {
+    background: rgb(0 0 0 / 5%);
 }
 
 .lattice-tools.is-daylight .lattice-tools-help-section {
@@ -134,6 +167,7 @@
 }
 
 .lattice-tools-help {
+    flex-basis: 100%;
     margin-top: 6px;
     overflow: hidden;
 }
