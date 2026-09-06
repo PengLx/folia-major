@@ -20,6 +20,8 @@ type LatticePosterProps = {
     isFocused: boolean;
     tile: LatticeTile;
     rect: Omit<ReflowTile, 'instanceId'>;
+    /** Empty world-space distance between neighbouring poster slots. */
+    gap: number;
     /** Seconds this poster waits before dropping into its slot, or null outside the opening wave. */
     entranceDelay: number | null;
     /** Reverse-wave delay used when the complete wall leaves the viewport. */
@@ -51,8 +53,8 @@ const ENTRANCE_LIFT = 90;
 // along the card outline on roughly half the frames of every hover. Measured across inset, clip-path
 // and opacity-crossfade variants, all of which showed it. Scaling the whole card has no such second
 // snapping unit and measured clean, so do NOT reintroduce `will-change` here as an optimization:
-// promoting the card is what would give it a layer to misalign against.
-const POP_SCALE = 1.03;
+// promoting the card is what would give it a layer to misalign against. X and Y use independent
+// ratios so every edge grows outward by exactly one layout gap even when its aspect ratio or span differs.
 
 // `tile` and `rect` are rebuilt by the wall's own memos whenever the queue, the selection or the
 // camera moves, so comparing them by identity would re-render every poster for values that did not
@@ -84,6 +86,7 @@ function LatticePoster({
     isFocused,
     tile,
     rect,
+    gap,
     entranceDelay,
     exitDelay,
     expanded,
@@ -106,6 +109,8 @@ function LatticePoster({
     const chrome = useLatticeChromeDisclosure(expanded);
     // The open card is already the foreground and carries the lyric canvas, so it never pops.
     const popped = !expanded && (chrome.hovered || isFocused);
+    const popScaleX = popped && rect.width > 0 ? (rect.width + gap * 2) / rect.width : 1;
+    const popScaleY = popped && rect.height > 0 ? (rect.height + gap * 2) / rect.height : 1;
     const isCurrent = tile.section === 'now';
     // The lyric scene is a Pixi renderer whose layout is rebuilt from the card's box, so mounting it
     // mid-expansion would rasterize every line once per animation frame. It waits for the spring.
@@ -164,13 +169,24 @@ function LatticePoster({
                     // revealed by a pan or a queue change never pop in fully drawn.
                     ? { ...rect, opacity: 0, scale: 0.94 }
                     : { ...rect, y: rect.y - ENTRANCE_LIFT, opacity: 0, scale: 0.88 }}
-            animate={{ x: rect.x, y: rect.y, width: rect.width, height: rect.height, opacity: 1, scale: popped ? POP_SCALE : 1 }}
+            animate={{
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                opacity: 1,
+                scale: 1,
+                scaleX: popScaleX,
+                scaleY: popScaleY,
+            }}
             exit={reducedMotion
                 ? { opacity: 0, transition: { duration: 0 } }
                 : {
                     y: rect.y - ENTRANCE_LIFT,
                     opacity: 0,
                     scale: 0.88,
+                    scaleX: 1,
+                    scaleY: 1,
                     transition: { duration: 0.28, delay: exitDelay, ease: [0.4, 0, 1, 1] },
                 }}
             transition={reducedMotion
@@ -179,7 +195,8 @@ function LatticePoster({
                     ? {
                         type: 'spring', stiffness: 300, damping: 34,
                         opacity: { duration: 0.26, ease: 'easeOut' },
-                        scale: { duration: 0.3, ease: 'easeOut' },
+                        scaleX: { duration: 0.3, ease: 'easeOut' },
+                        scaleY: { duration: 0.3, ease: 'easeOut' },
                     }
                     : {
                         type: 'spring', stiffness: 360, damping: 24, delay: landing,

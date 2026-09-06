@@ -248,6 +248,37 @@ test('focused poster stays centered after expanding with Space', async ({ mount,
     await expectExpandedCentered(wall);
 });
 
+test('pointer hover and keyboard focus grow every poster edge by one rendered grid gap', async ({ mount, page }) => {
+    const wall = await mount('lattice');
+    await settle(page);
+    await wall.locator('.lattice-field').press('Escape');
+    await settle(page);
+    const copies = wall.locator('.lattice-poster[aria-label="Poster 3 · Artist"]');
+    const visibleInstanceId = await copies.evaluateAll(nodes => nodes.find(node => {
+        const rect = node.getBoundingClientRect();
+        return rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight;
+    })?.getAttribute('data-instance-id'));
+    expect(visibleInstanceId).toBeTruthy();
+    const poster = wall.locator(`.lattice-poster[data-instance-id="${visibleInstanceId}"]`);
+    const base = (await poster.boundingBox())!;
+    const worldScale = await wall.locator('.lattice-world').evaluate(node => (
+        Math.abs(new DOMMatrix(getComputedStyle(node).transform).a)
+    ));
+    const renderedGrowth = 2 * 8 * worldScale;
+    const expectGapGrowth = async () => {
+        await expect.poll(async () => (await poster.boundingBox())!.width - base.width).toBeCloseTo(renderedGrowth, 1);
+        await expect.poll(async () => (await poster.boundingBox())!.height - base.height).toBeCloseTo(renderedGrowth, 1);
+    };
+
+    await poster.hover();
+    await expectGapGrowth();
+    await page.mouse.move(0, 0);
+    await expect.poll(async () => (await poster.boundingBox())!.width).toBeCloseTo(base.width, 1);
+
+    await poster.focus();
+    await expectGapGrowth();
+});
+
 test('mouse expansion centers the reflowed card and remains interruptible by trackpad input', async ({ mount, page }) => {
     const wall = await mount('lattice');
     await settle(page);

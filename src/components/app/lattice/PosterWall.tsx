@@ -324,6 +324,7 @@ export default function PosterWall({
                             isFocused={focused?.instanceId === instance.instanceId}
                             tile={tile}
                             rect={rect}
+                            gap={METRICS.gap}
                             entranceDelay={getEntranceDelay(rect)}
                             exitDelay={getExitDelay(rect)}
                             expanded={expanded}
