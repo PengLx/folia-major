@@ -6,6 +6,8 @@ import { useLatticeControlsStore } from '../../../stores/useLatticeControlsStore
 import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore';
 import { openCommandPalette, openCommandPaletteCommand } from '../../../stores/useAppViewStore';
 import { PRIMARY_MODIFIER_LABEL } from '../../../utils/platform';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
+import { usePlayerBottomBarBottomPx } from '../../../hooks/usePlayerBottomBarBottomPx';
 import { SlideActionButton } from '../../shared/SlideActionButton';
 import './LatticeFocusButton.css';
 
@@ -22,6 +24,8 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
     const handleToggleAutoFocusOnSongChange = useLatticeSettingsStore(state => state.handleToggleAutoFocusOnSongChange);
     const lightsOn = useLatticeSettingsStore(state => state.latticeLightsOn);
     const handleToggleLatticeLights = useLatticeSettingsStore(state => state.handleToggleLatticeLights);
+    const isWideLayout = useMediaQuery('(min-width: 640px)');
+    const bottomPx = usePlayerBottomBarBottomPx(isWideLayout ? 24 : 16);
     const queueShortcut = `${PRIMARY_MODIFIER_LABEL}+P`;
 
     useEffect(() => {
@@ -70,7 +74,7 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
     const helpId = 'lattice-tools-help';
 
     return (
-        <div ref={rootRef} className={`lattice-tools group ${isDaylight ? 'is-daylight' : ''}`}>
+        <motion.div ref={rootRef} style={{ bottom: bottomPx }} className={`lattice-tools group ${isDaylight ? 'is-daylight' : ''}`}>
             <AnimatePresence initial={false}>
                 {isOpen && (
                     <motion.div
@@ -188,6 +192,6 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
                 isDaylight={isDaylight}
                 accentColor="var(--text-accent)"
             />
-        </div>
+        </motion.div>
     );
 }
