@@ -178,6 +178,7 @@ export default {
     "confirm": "确定",
     "stageWaiting": "等待连接",
     "stageActionUnavailable": "Stage 模式下不支持这个操作",
+    "latticeUnavailableInFm": "队列拼贴在 FM 模式下不可用",
     "noPlayableSongs": "列表中没有可播放的歌曲",
     "songUnavailableTag": "已下架",
     "queueShuffled": "播放队列已打乱",

@@ -177,6 +177,7 @@ export default {
     "confirm": "Konfirmasi",
     "stageWaiting": "Menunggu input Stage eksternal",
     "stageActionUnavailable": "Aksi ini tidak tersedia di mode Stage",
+    "latticeUnavailableInFm": "Kolase antrean tidak tersedia dalam mode Personal FM",
     "noPlayableSongs": "Tidak ada lagu yang bisa diputar di daftar ini",
     "songUnavailableTag": "Tidak Tersedia",
     "queueShuffled": "Antrean diacak",

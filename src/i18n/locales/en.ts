@@ -178,6 +178,7 @@ export default {
     "confirm": "Confirm",
     "stageWaiting": "Waiting for external Stage input",
     "stageActionUnavailable": "This action is unavailable in Stage mode",
+    "latticeUnavailableInFm": "Queue collage is unavailable in Personal FM mode",
     "noPlayableSongs": "No playable songs in this list",
     "songUnavailableTag": "Unavailable",
     "queueShuffled": "Queue shuffled",

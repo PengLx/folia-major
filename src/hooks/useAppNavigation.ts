@@ -14,6 +14,9 @@ import {
 import type { GridViewCollectionDescriptor } from '../components/app/home/gridViewCollectionAdapters';
 import { useAppViewStore } from '../stores/useAppViewStore';
 import type { AppView } from '../stores/useAppViewStore';
+import { usePlaybackStore } from '../stores/usePlaybackStore';
+import { setStatusMessage } from '../stores/useStatusMessageStore';
+import i18n from '../i18n/config';
 
 // src/hooks/useAppNavigation.ts
 
@@ -87,11 +90,18 @@ const getCollectionHash = (collection: GridViewCollectionDescriptor) => (
 
 const LOCAL_MUSIC_LAST_ROW_KEY = 'folia_local_music_last_row';
 
+export const blockLatticeNavigationInFm = (): boolean => {
+    if (!usePlaybackStore.getState().isFmMode) return false;
+    setStatusMessage({ type: 'info', text: i18n.t('status.latticeUnavailableInFm') });
+    return true;
+};
+
 export function useAppNavigation() {
     // The view itself lives in useAppViewStore so that consumers far from here can read it
     // without being handed it; this hook stays the only writer.
     const currentView = useAppViewStore(state => state.view);
     const setCurrentView = useAppViewStore(state => state.setView);
+    const isFmMode = usePlaybackStore(state => state.isFmMode);
     const [focusedPlaylistIndex, setFocusedPlaylistIndex] = useState(0);
     const [navidromeFocusedAlbumIndex, setNavidromeFocusedAlbumIndex] = useState(0);
     const [pendingNavidromeSelection, setPendingNavidromeSelection] = useState<NavidromeViewSelection | null>(null);
@@ -214,6 +224,15 @@ export function useAppNavigation() {
         });
     }, [pushNavigationState]);
 
+    useEffect(() => {
+        if (!isFmMode || currentView !== 'lattice') return;
+        const collection = useCollectionNavigationStore.getState().snapshot;
+        const search = getSearchHistorySnapshot();
+        // FM owns and extends its queue dynamically, so replace a stale Lattice entry instead of
+        // leaving it in browser history where Back would immediately reopen an unsupported view.
+        pushNavigationState({ view: 'player', replace: true, hash: '#player', search, collection });
+    }, [currentView, isFmMode, pushNavigationState]);
+
     const navigateToHome = useCallback(() => {
         if (useAppViewStore.getState().view === 'home') {
             return;
@@ -231,6 +250,7 @@ export function useAppNavigation() {
     }, [pushNavigationState]);
 
     const navigateToLattice = useCallback(() => {
+        if (blockLatticeNavigationInFm()) return;
         if (useAppViewStore.getState().view === 'lattice') return;
         useSearchNavigationStore.getState().hideSearchOverlay();
         pushNavigationState({

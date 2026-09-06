@@ -933,10 +933,11 @@ describe('personal FM withdraws the queue commands', () => {
         QUEUE_COMMAND_IDS.forEach(id => expect(ids).not.toContain(id));
     });
 
-    it('keeps the FM mode picker and transport reachable', () => {
+    it('keeps the FM controls and the guarded Lattice entry reachable', () => {
         const ids = availableIds(true);
         expect(ids).toContain('playback-fm-mode');
         expect(ids).toContain('playback-next');
+        expect(ids).toContain('navigate-lattice');
     });
 });
 
