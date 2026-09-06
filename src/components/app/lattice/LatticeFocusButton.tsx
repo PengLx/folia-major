@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Command, Crosshair, Focus, ListMusic, Settings2, X } from 'lucide-react';
+import { CircleHelp, Command, Crosshair, Focus, ListMusic, Settings2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLatticeControlsStore } from '../../../stores/useLatticeControlsStore';
 import { useLatticeSettingsStore } from '../../../stores/useLatticeSettingsStore';
@@ -15,6 +15,7 @@ import './LatticeFocusButton.css';
 export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean }) {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
     const focusCurrentSong = useLatticeControlsStore(state => state.focusCurrentSong);
     const autoFocusOnSongChange = useLatticeSettingsStore(state => state.autoFocusOnSongChange);
@@ -25,10 +26,16 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
         if (!isOpen) return undefined;
 
         const handlePointerDown = (event: PointerEvent) => {
-            if (event.target instanceof Node && !rootRef.current?.contains(event.target)) setIsOpen(false);
+            if (event.target instanceof Node && !rootRef.current?.contains(event.target)) {
+                setIsOpen(false);
+                setShowHelp(false);
+            }
         };
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setIsOpen(false);
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+                setShowHelp(false);
+            }
         };
 
         document.addEventListener('pointerdown', handlePointerDown);
@@ -42,19 +49,23 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
     const handleFocusCurrentSong = () => {
         focusCurrentSong?.();
         setIsOpen(false);
+        setShowHelp(false);
     };
 
     const handleOpenQueueCommand = () => {
         setIsOpen(false);
+        setShowHelp(false);
         openCommandPaletteCommand('queue');
     };
 
     const handleOpenCommandPalette = () => {
         setIsOpen(false);
+        setShowHelp(false);
         openCommandPalette();
     };
 
     const panelId = 'lattice-tools-panel';
+    const helpId = 'lattice-tools-help';
 
     return (
         <div ref={rootRef} className={`lattice-tools group ${isDaylight ? 'is-daylight' : ''}`}>
@@ -104,6 +115,38 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
                             <span>{t('home.latticeOpenQueueCommand')}</span>
                             <kbd>{queueShortcut}</kbd>
                         </button>
+                        <button
+                            type="button"
+                            role="menuitem"
+                            className="lattice-tools-action lattice-tools-help-trigger"
+                            aria-label={t('home.latticeHelp')}
+                            title={t('home.latticeHelp')}
+                            aria-expanded={showHelp}
+                            aria-controls={helpId}
+                            onClick={() => setShowHelp(visible => !visible)}
+                        >
+                            <CircleHelp aria-hidden="true" />
+                        </button>
+                        <AnimatePresence initial={false}>
+                            {showHelp && (
+                                <motion.div
+                                    id={helpId}
+                                    role="note"
+                                    className="lattice-tools-help"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                                >
+                                    <ul>
+                                        <li>{t('home.latticeHelpPoster')}</li>
+                                        <li>{t('home.latticeHelpMove')}</li>
+                                        <li>{t('home.latticeHelpCommands')}</li>
+                                        <li>{t('home.latticeHelpOpen', { modifier: PRIMARY_MODIFIER_LABEL })}</li>
+                                    </ul>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -111,7 +154,10 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
             <SlideActionButton
                 icon={isOpen ? X : Settings2}
                 title={t('home.latticeTools')}
-                onActivate={() => setIsOpen(open => !open)}
+                onActivate={() => setIsOpen(open => {
+                    if (open) setShowHelp(false);
+                    return !open;
+                })}
                 slideIcon={Command}
                 slideTitle={t('options.gridSlideTargetCommandPalette')}
                 onSlide={handleOpenCommandPalette}

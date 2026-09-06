@@ -39,7 +39,6 @@ type WallKeyboardFocusOptions = {
     rendered: Map<string, { x: number; y: number; width: number; height: number }>;
     panTo: (rect: { x: number; y: number; width: number; height: number }) => void;
     setActivePoster: Dispatch<SetStateAction<ActiveLatticePoster | null>>;
-    setShowHint: Dispatch<SetStateAction<boolean>>;
     tiles: LatticeTile[];
     worldRef: RefObject<HTMLDivElement | null>;
     onBack: () => void;
@@ -55,7 +54,6 @@ export const useWallKeyboardFocus = ({
     panTo,
     rendered,
     setActivePoster,
-    setShowHint,
     tiles,
     worldRef,
     onBack,
@@ -107,10 +105,9 @@ export const useWallKeyboardFocus = ({
             : seed;
         if (!next) return;
 
-        setShowHint(false);
         setFocused(next);
         panTo(rendered.get(next.instanceId) ?? next);
-    }, [geometry, getViewportCenter, instances, metrics, panTo, rendered, setFocused, setShowHint, tiles.length]);
+    }, [geometry, getViewportCenter, instances, metrics, panTo, rendered, setFocused, tiles.length]);
 
     const handleKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
         if (event.altKey || event.ctrlKey || event.metaKey) return;

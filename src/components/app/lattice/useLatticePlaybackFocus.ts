@@ -20,7 +20,6 @@ type PlaybackFocusOptions = {
     metrics: WallMetrics;
     getViewportCenter: () => { x: number; y: number };
     setActivePoster: Dispatch<SetStateAction<ActiveLatticePoster | null>>;
-    setShowHint: Dispatch<SetStateAction<boolean>>;
     setFocused: (instance: QueueInstance | null) => void;
     panTo: (rect: { x: number; y: number; width: number; height: number }, instant?: boolean) => void;
 };
@@ -33,7 +32,6 @@ export const useLatticePlaybackFocus = ({
     metrics,
     getViewportCenter,
     setActivePoster,
-    setShowHint,
     setFocused,
     panTo,
 }: PlaybackFocusOptions) => {
@@ -59,7 +57,6 @@ export const useLatticePlaybackFocus = ({
         if (!instance) return;
 
         const tile = tiles[queueIndex];
-        setShowHint(false);
         setFocused(instance);
         setActivePoster({ instance, tile });
         const expandedRect = layoutExpandedBlock(geometry, tiles.length, instance, metrics).get(instance.instanceId);

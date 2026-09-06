@@ -1,7 +1,7 @@
 // src/components/app/lattice/useWallPointerPan.ts
 
 import { animate } from 'framer-motion';
-import { useCallback, useEffect, useRef, type Dispatch, type MutableRefObject, type PointerEvent, type MouseEvent, type RefObject, type SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, type MutableRefObject, type PointerEvent, type MouseEvent, type RefObject } from 'react';
 import type { Bounds } from './layout';
 import type { LatticeCamera } from './useWallCameraPan';
 
@@ -20,13 +20,12 @@ type WallPointerPanOptions = {
     bounds: Bounds;
     cameraRef: MutableRefObject<LatticeCamera>;
     getWorldBounds: (camera: LatticeCamera, viewport: { width: number; height: number }) => Bounds;
-    setShowHint: Dispatch<SetStateAction<boolean>>;
     viewportRef: MutableRefObject<{ width: number; height: number }>;
 };
 
 export const useWallPointerPan = ({
     applyCamera, animationRef, stopPan, containerRef, reducedMotion, overscan,
-    bounds, cameraRef, getWorldBounds, setShowHint, viewportRef,
+    bounds, cameraRef, getWorldBounds, viewportRef,
 }: WallPointerPanOptions) => {
     const boundsRef = useRef(bounds);
     boundsRef.current = bounds;
@@ -85,7 +84,6 @@ export const useWallPointerPan = ({
             pointer.dragged = true;
             didDragRef.current = true;
             event.currentTarget.setPointerCapture(event.pointerId);
-            setShowHint(false);
         }
         const elapsed = event.timeStamp - pointer.last.time;
         if (elapsed > 0) {
@@ -94,7 +92,7 @@ export const useWallPointerPan = ({
         }
         pointer.last = { x: event.clientX, y: event.clientY, time: event.timeStamp };
         if (pointer.dragged) updateCamera(pointer.camera.x + dx, pointer.camera.y + dy);
-    }, [setShowHint, updateCamera]);
+    }, [updateCamera]);
 
     // Continue along the release velocity; stale samples and cancelled gestures never coast.
     const onPointerUp = useCallback((event: PointerEvent<HTMLDivElement>) => {
@@ -133,7 +131,6 @@ export const useWallPointerPan = ({
             if (event.ctrlKey || event.metaKey) return;
             event.preventDefault();
             if (pointerRef.current) return;
-            setShowHint(false);
             const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewportRef.current.height : 1;
             const dx = (event.shiftKey && !event.deltaX ? event.deltaY : event.deltaX) * unit;
             const dy = (event.shiftKey && !event.deltaX ? 0 : event.deltaY) * unit;
@@ -159,7 +156,7 @@ export const useWallPointerPan = ({
             window.removeEventListener('pointercancel', endOutside);
             cancel();
         };
-    }, [animationRef, cameraRef, containerRef, interrupt, reducedMotion, setShowHint, stopPan, updateCamera, viewportRef]);
+    }, [animationRef, cameraRef, containerRef, interrupt, reducedMotion, stopPan, updateCamera, viewportRef]);
 
     return { didDragRef, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onClickCapture };
 };

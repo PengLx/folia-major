@@ -1,6 +1,5 @@
 import { useReducedMotion, type MotionValue } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { PlayerState, type SongResult } from '../../../types';
 import {
     getLatticeGeometry,
@@ -77,7 +76,6 @@ export default function PosterWall({
     onBack,
 }: PosterWallProps) {
     countRender('PosterWall');
-    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const worldRef = useRef<HTMLDivElement>(null);
     const cameraRef = useRef<LatticeCamera>({ x: 34, y: 80, scale: 0.76 });
@@ -89,7 +87,6 @@ export default function PosterWall({
     }>({ enabled: false, rect: null });
     const currentPosterVisibleRef = useRef(true);
     const [bounds, setBounds] = useState<Bounds>(() => getWorldBounds(cameraRef.current, viewportRef.current));
-    const [showHint, setShowHint] = useState(true);
     // Nothing is drawn until the field reports its size: the seeded camera and the default
     // viewport would otherwise place the entering wave, and the playing song, off centre.
     const [measured, setMeasured] = useState(false);
@@ -220,7 +217,6 @@ export default function PosterWall({
         bounds,
         cameraRef,
         getWorldBounds,
-        setShowHint,
         viewportRef,
     });
 
@@ -256,7 +252,6 @@ export default function PosterWall({
         panTo,
         rendered: layout,
         setActivePoster,
-        setShowHint,
         tiles,
         worldRef,
         onBack,
@@ -272,7 +267,6 @@ export default function PosterWall({
         const instance = currentInstances.find(item => item.instanceId === instanceId);
         const tile = instance ? currentTiles[instance.queueIndex] : undefined;
         if (!instance || !tile) return;
-        setShowHint(false);
         setFocused(instance);
         setActivePoster({ instance, tile });
         // Expansion reflows both the position and size of the selected slot.
@@ -289,7 +283,6 @@ export default function PosterWall({
         metrics: METRICS,
         getViewportCenter,
         setActivePoster,
-        setShowHint,
         setFocused,
         panTo,
     });
@@ -344,12 +337,6 @@ export default function PosterWall({
                         />
                     );
                 })}
-            </div>
-
-            <div className={`lattice-hint ${showHint && tiles.length ? '' : 'is-hidden'}`}>
-                <span />
-                <strong>{t('home.latticeExplore')}</strong>
-                <small>{t('home.latticeExploreHint')}</small>
             </div>
 
         </div>
