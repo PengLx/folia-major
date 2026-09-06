@@ -115,38 +115,49 @@ export default function LatticeFocusButton({ isDaylight }: { isDaylight: boolean
                             <span>{t('home.latticeOpenQueueCommand')}</span>
                             <kbd>{queueShortcut}</kbd>
                         </button>
-                        <button
-                            type="button"
-                            role="menuitem"
-                            className="lattice-tools-action lattice-tools-help-trigger"
-                            aria-label={t('home.latticeHelp')}
-                            title={t('home.latticeHelp')}
-                            aria-expanded={showHelp}
-                            aria-controls={helpId}
-                            onClick={() => setShowHelp(visible => !visible)}
-                        >
-                            <CircleHelp aria-hidden="true" />
-                        </button>
-                        <AnimatePresence initial={false}>
-                            {showHelp && (
-                                <motion.div
-                                    id={helpId}
-                                    role="note"
-                                    className="lattice-tools-help"
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.18, ease: 'easeOut' }}
-                                >
-                                    <ul>
-                                        <li>{t('home.latticeHelpPoster')}</li>
-                                        <li>{t('home.latticeHelpMove')}</li>
-                                        <li>{t('home.latticeHelpCommands')}</li>
-                                        <li>{t('home.latticeHelpOpen', { modifier: PRIMARY_MODIFIER_LABEL })}</li>
-                                    </ul>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        <div className="lattice-tools-help-section" role="none">
+                            <button
+                                type="button"
+                                role="menuitem"
+                                className="lattice-tools-action lattice-tools-help-trigger"
+                                aria-label={t('home.latticeHelp')}
+                                title={t('home.latticeHelp')}
+                                aria-expanded={showHelp}
+                                aria-controls={helpId}
+                                onClick={() => setShowHelp(visible => !visible)}
+                            >
+                                <CircleHelp aria-hidden="true" />
+                            </button>
+                            <AnimatePresence initial={false}>
+                                {showHelp && (
+                                    <motion.div
+                                        id={helpId}
+                                        role="note"
+                                        className="lattice-tools-help"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.18, ease: 'easeOut' }}
+                                    >
+                                        <ul>
+                                            <li>
+                                                <span>{t('home.latticeHelpPoster')}</span>
+                                                <span className="lattice-tools-help-key"><kbd>ESC</kbd>{t('home.latticeHelpReturn')}</span>
+                                            </li>
+                                            <li><span>{t('home.latticeHelpMove')}</span></li>
+                                            <li>
+                                                <span>{t('home.latticeHelpCommands')}</span>
+                                                <kbd>S</kbd>
+                                            </li>
+                                            <li>
+                                                <span>{t('home.latticeHelpOpen')}</span>
+                                                <kbd>{PRIMARY_MODIFIER_LABEL} + Q</kbd>
+                                            </li>
+                                        </ul>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
