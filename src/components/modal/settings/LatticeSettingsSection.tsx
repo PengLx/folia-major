@@ -58,7 +58,7 @@ const LatticeSettingsSection: React.FC<LatticeSettingsSectionProps> = ({
                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${latticeVignette ? 'translate-x-6' : 'translate-x-0'}`} />
                 </button>
             </div>
-            <div className="border-t pt-4">
+            <div className="border-t border-black/5 pt-4 dark:border-white/5">
                 <LatticePosterTintControls
                     {...posterTint}
                     isDaylight={isDaylight}
