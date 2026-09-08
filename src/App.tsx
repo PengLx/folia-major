@@ -25,6 +25,7 @@ const AutomixTransitionAnimation = lazy(() => import('./components/app/overlays/
 const Lattice = lazy(() => import('./components/app/lattice/Lattice'));
 import { UserGuideModal } from './components/modal/UserGuideModal';
 import { PlaybackEntryViewPrompt } from './components/modal/playback-entry-view/PlaybackEntryViewPrompt';
+import { LatticeFmNotice } from './components/modal/playback-entry-view/LatticeFmNotice';
 import { usePlaybackEntryViewPromptGate } from './hooks/usePlaybackEntryViewPromptGate';
 import { USER_GUIDE_AUTO_OPEN_VERSION } from './components/modal/userGuideContent';
 import { useAppDialogsModel } from './components/app/dialogs/useAppDialogsModel';
@@ -85,6 +86,7 @@ import { PERSONAL_FM_MODE_COMMAND_ID } from './components/command-palette/comman
 import { usePlaybackUiEffects } from './hooks/usePlaybackUiEffects';
 import { useLibraryPlaybackController } from './hooks/useLibraryPlaybackController';
 import { useNavidromeScrobbleReporter } from './hooks/useNavidromeScrobbleReporter';
+import { useNeteaseScrobbleReporter } from './hooks/useNeteaseScrobbleReporter';
 import { usePlaybackQueueController } from './hooks/usePlaybackQueueController';
 import { usePlaybackTransportController } from './hooks/usePlaybackTransportController';
 import { useLocalLibraryCatalog } from './hooks/useLocalLibraryCatalog';
@@ -664,6 +666,7 @@ export default function App() {
         setLocalMusicState,
         navigateToPlayer,
         navigateToPlaybackView,
+        navigateFromPlayerCapsule,
         navigateToHome,
         navigateToLattice,
         navigateBackFromLattice,
@@ -1447,6 +1450,11 @@ export default function App() {
         pauseDuringTransition: handlePauseDuringTransition,
     });
     useNavidromeScrobbleReporter({
+        audioRef,
+        currentSong,
+        activeDeck: automix.activeDeck,
+    });
+    useNeteaseScrobbleReporter({
         audioRef,
         currentSong,
         activeDeck: automix.activeDeck,
@@ -2276,6 +2284,7 @@ export default function App() {
         togglePlay,
         toggleLoop,
         navigateToPlayer,
+        navigateFromPlayerCapsule,
         shouldHidePlayerProgressBar,
         onSeekMainAudio: seekMainAudio,
         onStagePlayerSeek: publishStagePlayerPlaybackUpdate,
@@ -2801,6 +2810,7 @@ export default function App() {
             <AppDialogs model={appDialogsModel} />
             <UserGuideModal theme={theme} />
             <PlaybackEntryViewPrompt theme={theme} />
+            <LatticeFmNotice />
         </AppShell>
     );
 }

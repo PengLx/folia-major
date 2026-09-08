@@ -202,7 +202,8 @@ export default {
     "confirm": "确定",
     "stageWaiting": "等待连接",
     "stageActionUnavailable": "Stage 模式下不支持这个操作",
-    "latticeUnavailableInFm": "队列拼贴在 FM 模式下不可用",
+    "latticeUnavailableInFm": "Lattice 不支持私人 FM 模式",
+    "latticeFmOpenedInPlayer": "Lattice 不支持私人 FM 模式，已使用普通播放器打开",
     "noPlayableSongs": "列表中没有可播放的歌曲",
     "songUnavailableTag": "已下架",
     "queueShuffled": "播放队列已打乱",
@@ -466,6 +467,8 @@ export default {
       "settings-lyrics-renderer": { "title": "歌词渲染方式", "description": "直接跳到播放器歌词的绘制方式设置" },
       "settings-grid-card-style": { "title": "网格卡片样式", "description": "直接跳到首页网格卡片的绘制样式" },
       "settings-queue-behavior": { "title": "队列行为", "description": "直接跳到播放队列的组建与保留方式" },
+      "settings-netease-scrobble": { "title": "网易云听歌打卡", "description": "直接跳到是否把播放记录上报给网易云音乐" },
+      "netease-scrobble-toggle": { "title": "网易云听歌打卡", "description": "开启或关闭把播放记录上报给网易云音乐" },
       "settings-audio-output": { "title": "音频输出", "description": "直接跳到音频输出设备与格式设置" },
       "settings-transition": { "title": "智能过渡", "description": "直接跳到 FOLIA 智能过渡设置" },
       "settings-navidrome": { "title": "Navidrome 服务器", "description": "直接跳到 Navidrome 服务器连接设置" },
@@ -1573,6 +1576,7 @@ export default {
     "subtitleOverlayOpacity": "字幕透明度",
     "subtitleOverlayBackground": "字幕背景",
     "subtitleOverlayBackgroundDesc": "为底部字幕添加主题自适应的柔和扩散光晕，提高复杂画面中的可读性。",
+    "subtitleUpcomingLyricsBlur": "非翻译歌词添加模糊效果",
     "showHarmonySubtitle": "显示和声字幕",
     "showHarmonySubtitleDesc": "显示或隐藏顶部的和声歌词层。",
     "harmonySubtitleBackground": "和声字幕背景",
@@ -2144,6 +2148,10 @@ export default {
     "scanningFolder": "正在扫描 {{folderName}}",
     "lyricFilterUpdated": "歌词过滤规则已更新",
     "queueSettings": "播放队列",
+    "scrobbleSettings": "听歌打卡",
+    "neteaseScrobble": "上报播放记录(仅网易云)",
+    "neteaseScrobbleDesc": "在线网易云歌曲真实播放满 30 秒后，向你的网易云账号上报一次听歌记录。本地文件、云盘歌曲和其他音乐平台一律不上报；此功能可能有一定风险，请谨慎使用",
+    "neteaseScrobbleSignInHint": "需要先登录网易云音乐账号。",
     "queueDefaultBehavior": "加入队列的默认位置",
     "queueDefaultBehaviorDesc": "加入播放队列按钮的默认行为。",
     "queueAppendLabel": "追加到末尾",
@@ -2291,6 +2299,33 @@ export default {
       "monetAudioVisibility": {
         "title": "Monet 可隐藏频谱",
         "description": "Monet 视觉器新增频谱显示开关，可只保留歌词与封面画面。"
+      }
+    },
+    "v0_7_5": {
+      "intro": "0.7.5 带来可自选的播放入口、更完整的命令面板操作，以及更可靠的桌面端诊断与更新体验。",
+      "playbackEntryChoice": {
+        "title": "选择播放后进入的视图",
+        "description": "点击播放时可选择进入可视化播放器或 Lattice 队列拼贴。更新说明结束后 Folia 会询问一次，此后仍可在界面设置中修改。由于 Lattice 不支持私人 FM，启动私人 FM 时仍会进入标准播放器。"
+      },
+      "commandPaletteGridActions": {
+        "title": "命令面板接管网格操作",
+        "description": "通过键盘调用当前网格支持的排序、面板开关、重新扫描、歌曲信息整理、歌单导出和编辑操作。设置命令可直达具体小节，网格筛选还支持用 --play 或 --add 播放、追加筛选结果。"
+      },
+      "localFolderRecovery": {
+        "title": "忽略并恢复本地子目录",
+        "description": "从已导入的本地音乐库移除子目录后，后续扫描会继续忽略它，同时保留根目录中的其他内容。目录树会留下可恢复入口，需要时可取消忽略并立即重新扫描。"
+      },
+      "neteaseScrobble": {
+        "title": "可选的网易云听歌打卡",
+        "description": "登录网易云后，可选择在在线网易云歌曲真实播放满 30 秒时上报一次听歌记录。本地文件、云盘歌曲和其他平台一律不上报；这是会写入真实账号的可选功能，默认不会自行开启。"
+      },
+      "desktopReliability": {
+        "title": "更清晰的桌面更新与崩溃报告",
+        "description": "macOS 和 Linux 现在也能检查新版本，并引导下载完整安装包或通过 AUR 升级；Windows 继续支持自动更新。Folia 崩溃时会保存诊断日志并可打开所在目录，Windows 卸载程序也可按需清除用户数据。"
+      },
+      "visualizerRefinements": {
+        "title": "更轻、更清晰的视觉器",
+        "description": "Tempera 与 Sonnet 会根据 GPU 纹理边界动态调整渲染分辨率，减少不必要的显存占用；Monet 与 Lattice 的标题不再容易裁切，底部字幕也可关闭非翻译后续歌词的模糊效果。"
       }
     }
   },
@@ -2631,7 +2666,7 @@ export default {
     "confirm": "就这样",
     "player": {
       "title": "可视化",
-      "description": "单曲视图：大封面、歌词，以及随音频起伏的可视化效果。"
+      "description": "单曲视图: 多种歌词动画和背景搭配，自由定制的单曲歌词模式"
     },
     "lattice": {
       "title": "Lattice（队列拼贴）",

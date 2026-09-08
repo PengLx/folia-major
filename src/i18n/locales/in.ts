@@ -201,7 +201,8 @@ export default {
     "confirm": "Konfirmasi",
     "stageWaiting": "Menunggu input Stage eksternal",
     "stageActionUnavailable": "Aksi ini tidak tersedia di mode Stage",
-    "latticeUnavailableInFm": "Kolase antrean tidak tersedia dalam mode Personal FM",
+    "latticeUnavailableInFm": "Lattice tidak mendukung mode Personal FM",
+    "latticeFmOpenedInPlayer": "Lattice tidak mendukung mode Personal FM. Pemutar standar dibuka sebagai gantinya",
     "noPlayableSongs": "Tidak ada lagu yang bisa diputar di daftar ini",
     "songUnavailableTag": "Tidak Tersedia",
     "queueShuffled": "Antrean diacak",
@@ -465,6 +466,8 @@ export default {
       "settings-lyrics-renderer": { "title": "Perender lirik", "description": "Langsung ke pengaturan cara lirik digambar di pemutar" },
       "settings-grid-card-style": { "title": "Gaya kartu kisi", "description": "Langsung ke pengaturan gaya kartu pada kisi beranda" },
       "settings-queue-behavior": { "title": "Perilaku antrean", "description": "Langsung ke pengaturan cara antrean putar dibentuk dan disimpan" },
+      "settings-netease-scrobble": { "title": "Laporan dengar NetEase", "description": "Langsung ke pengaturan pelaporan pemutaran ke NetEase Cloud Music" },
+      "netease-scrobble-toggle": { "title": "Laporan dengar NetEase", "description": "Aktifkan atau matikan pelaporan pemutaran ke NetEase Cloud Music" },
       "settings-audio-output": { "title": "Keluaran audio", "description": "Langsung ke pengaturan perangkat dan format keluaran audio" },
       "settings-transition": { "title": "Transisi cerdas", "description": "Langsung ke pengaturan transisi FOLIA" },
       "settings-navidrome": { "title": "Server Navidrome", "description": "Langsung ke pengaturan koneksi server Navidrome" },
@@ -1566,6 +1569,7 @@ export default {
     "subtitleOverlayOpacity": "Opasitas Subtitle",
     "subtitleOverlayBackground": "Latar Belakang Subtitle",
     "subtitleOverlayBackgroundDesc": "Tambahkan halo lembut yang peka tema untuk meningkatkan keterbacaan di atas visual yang ramai.",
+    "subtitleUpcomingLyricsBlur": "Buramkan lirik non-terjemahan",
     "showHarmonySubtitle": "Tampilkan Subtitle Harmoni",
     "showHarmonySubtitleDesc": "Tampilkan atau sembunyikan overlay lirik harmoni atas.",
     "harmonySubtitleBackground": "Latar Belakang Subtitle Harmoni",
@@ -2055,6 +2059,10 @@ export default {
     "scanningFolder": "Memindai {{folderName}}",
     "lyricFilterUpdated": "Aturan filter lirik diperbarui",
     "queueSettings": "Antrean Putar",
+    "scrobbleSettings": "Laporan Dengar",
+    "neteaseScrobble": "Laporkan pemutaran (khusus NetEase)",
+    "neteaseScrobbleDesc": "Melaporkan satu pemutaran ke akun NetEase Anda setelah lagu NetEase daring benar-benar diputar minimal 30 detik. Berkas lokal, unggahan cloud, dan penyedia lain tidak pernah dilaporkan. Fitur ini memiliki risiko tertentu - gunakan dengan hati-hati.",
+    "neteaseScrobbleSignInHint": "Masuk ke NetEase Cloud Music untuk memakai ini.",
     "queueDefaultBehavior": "Posisi default saat menambahkan ke antrean",
     "queueDefaultBehaviorDesc": "Perilaku default saat menambahkan lagu ke antrean.",
     "queueAppendLabel": "Tambahkan ke akhir",
@@ -2226,6 +2234,33 @@ export default {
       "monetAudioVisibility": {
         "title": "Sembunyikan Spektrum Monet",
         "description": "Visualizer Monet kini dapat menyembunyikan spektrum audionya, menyisakan lirik dan sampul saja."
+      }
+    },
+    "v0_7_5": {
+      "intro": "Versi 0.7.5 memberi Anda kendali lebih besar atas tampilan tujuan pemutaran, menghadirkan tindakan kisi dan pengaturan ke panel perintah, serta meningkatkan keandalan desktop.",
+      "playbackEntryChoice": {
+        "title": "Pilih Tampilan Tujuan Pemutaran",
+        "description": "Pilih apakah tombol Putar membuka pemutar visualizer atau kolase antrean Lattice. Folia menanyakannya sekali setelah catatan rilis, dan pilihan tetap dapat diubah di pengaturan Antarmuka. Personal FM tetap membuka pemutar standar karena tidak dapat berjalan di Lattice."
+      },
+      "commandPaletteGridActions": {
+        "title": "Tindakan Kisi di Panel Perintah",
+        "description": "Jalankan tindakan yang tersedia pada kisi saat ini—pengurutan, panel, pemindaian ulang, perapian metadata, ekspor playlist, dan pengeditan—dengan papan ketik. Perintah pengaturan kini langsung menuju bagian tertentu, sedangkan --play atau --add dapat menjalankan tindakan pada lagu hasil filter."
+      },
+      "localFolderRecovery": {
+        "title": "Abaikan dan Pulihkan Subfolder Lokal",
+        "description": "Menghapus subfolder dari pustaka lokal yang diimpor kini membuatnya tetap diabaikan pada pemindaian berikutnya tanpa menghapus seluruh folder induk. Pohon folder menyimpan entri yang dapat dipulihkan agar subfolder bisa dikembalikan dan dipindai ulang."
+      },
+      "neteaseScrobble": {
+        "title": "Laporan Pemutaran NetEase Opsional",
+        "description": "Pengguna NetEase yang sudah masuk dapat memilih untuk melaporkan lagu NetEase online setelah benar-benar diputar setidaknya 30 detik. Berkas lokal, lagu cloud drive, dan penyedia lain tidak pernah dilaporkan; fitur yang menulis ke akun ini tetap mati sampai Anda mengaktifkannya."
+      },
+      "desktopReliability": {
+        "title": "Pembaruan dan Laporan Crash yang Lebih Jelas",
+        "description": "Versi macOS dan Linux kini dapat memeriksa rilis baru lalu membuka installer lengkap atau AUR, sedangkan Windows tetap mendukung pembaruan otomatis. Saat Folia crash, log diagnostik disimpan dan foldernya dapat dibuka; uninstaller Windows juga dapat menghapus data pengguna jika diminta."
+      },
+      "visualizerRefinements": {
+        "title": "Visualizer yang Lebih Ringan dan Jelas",
+        "description": "Tempera dan Sonnet kini menyesuaikan resolusi render di sekitar batas tekstur GPU untuk mengurangi penggunaan memori yang tidak perlu. Judul Monet dan Lattice tidak mudah terpotong, dan subtitle bawah dapat menampilkan lirik non-terjemahan berikutnya tanpa efek buram."
       }
     }
   },
@@ -2564,7 +2599,7 @@ export default {
     "confirm": "Pakai ini",
     "player": {
       "title": "Visualizer",
-      "description": "Satu lagu sekaligus: sampul besar, lirik, dan visualizer yang bergerak mengikuti audio."
+      "description": "Tampilan lirik satu lagu yang dapat disesuaikan dengan beragam animasi lirik dan kombinasi latar belakang."
     },
     "lattice": {
       "title": "Lattice (kolase antrean)",
