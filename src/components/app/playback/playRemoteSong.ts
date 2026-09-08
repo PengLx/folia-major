@@ -3,6 +3,7 @@ import { PlayerState } from '../../../types';
 import { setCurrentSong, setPlayQueue, setAudioSrc, setDuration, setPlayerState, setCurrentLineIndex, setCachedCoverUrl } from '../../../stores/usePlaybackStore';
 import { currentTime } from '../../../stores/motionSignals';
 import { startRemotePlayback, stopRemotePlayback } from '../../../services/remotePlayback';
+import { useAudioSettingsStore } from '../../../stores/useAudioSettingsStore';
 import { loadOnlineSongLyrics } from '../../../services/onlinePlayback';
 
 // src/components/app/playback/playRemoteSong.ts
@@ -18,7 +19,7 @@ export async function playRemoteSong({ song, queue, audio, isCurrent, setLyrics,
     setAudioSrc(null);
     setPlayerState(PlayerState.IDLE);
     try {
-        if (!await startRemotePlayback(song) || !isCurrent()) return false;
+        if (!await startRemotePlayback(song, { quality: useAudioSettingsStore.getState().audioQuality }) || !isCurrent()) return false;
         setCurrentSong(song);
         setPlayQueue(queue);
         setDuration(song.durationMs / 1000);

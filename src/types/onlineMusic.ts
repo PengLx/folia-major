@@ -203,6 +203,8 @@ export class OnlineProviderError extends Error {
 
 export interface OnlineSearchProvider {
     searchSongs(query: string, limit: number, offset: number): Promise<ProviderPage<UnifiedSong>>;
+    /** Exact lookup by ISRC for providers whose catalog indexes it; absent means unsupported. */
+    searchSongsByIsrc?(isrc: string): Promise<UnifiedSong[]>;
 }
 
 export interface OnlinePlaybackProvider {

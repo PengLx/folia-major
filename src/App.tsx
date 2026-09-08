@@ -1,5 +1,6 @@
 import { useAppleMusicLibrary } from './hooks/useAppleMusicLibrary';
 import { useRemotePlayback } from './hooks/useRemotePlayback';
+import { resolveAutoAdvanceSong } from './utils/playbackNeighbors';
 import { commandRemotePlayback, isRemotePlaybackActive } from './services/remotePlayback';
 import { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion } from 'framer-motion';
@@ -1412,7 +1413,7 @@ export default function App() {
         if (effectiveLoopMode === 'one' && currentSong) {
             void playSong(currentSong, playQueue, isFmMode, { shouldNavigateToPlayer: false });
         } else void handleNextTrack({ allowStopOnMissing: true, shouldNavigateToPlayer: false });
-    });
+    }, () => resolveAutoAdvanceSong({ playQueue, currentSong, loopMode: effectiveLoopMode, isFmMode }));
 
     /**
      * The two controls that mean something different while a blend is in flight, held as refs.

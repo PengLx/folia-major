@@ -2,8 +2,9 @@ import { getRemotePlaybackOwner, stopRemotePlayback } from '../services/remotePl
 import { setCurrentSong, setPlayQueue } from '../stores/usePlaybackStore';
 import { useCallback, useEffect } from 'react';
 import { omni } from '../services/onlineMusic/omni';
+import i18n from '../i18n/config';
 import { useOnlineProviderAccountStore } from '../stores/useOnlineProviderAccountStore';
-import type { ProviderCollection } from '../types/onlineMusic';
+import type { MediaId, ProviderCollection } from '../types/onlineMusic';
 
 // src/hooks/useAppleMusicLibrary.ts
 
@@ -35,11 +36,26 @@ export async function refreshAppleMusicLibrary(): Promise<boolean> {
             if (!page.hasMore || page.nextOffset <= offset) break;
             offset = page.nextOffset;
         }
+        if (omni.getProviderCapabilities('applemusic').userCloud) {
+            collections.push({ providerId: 'applemusic', id: 'library-songs', name: i18n.t('appleMusic.librarySongs'), type: 'cloud', coverUrl: collections[0]?.coverUrl });
+        }
         updateAccount('applemusic', { user, collections, status: 'authenticated', hydration: 'ready', freshness: 'fresh', error: undefined });
+        void hydrateLikedSongs(request, user.id);
         return true;
     } catch {
         if (request === generation) updateAccount('applemusic', { status: 'error', hydration: 'ready', freshness: 'error', error: 'apple-music-unavailable' });
         return false;
+    }
+}
+
+// Favourites need a library scan, so they arrive after the playlists instead of delaying them.
+async function hydrateLikedSongs(request: number, userId: MediaId) {
+    if (!omni.getProviderCapabilities('applemusic').likes) return;
+    try {
+        const likedSongIds = await omni.getProviderLikedSongIds('applemusic', userId);
+        if (request === generation) useOnlineProviderAccountStore.getState().updateAccount('applemusic', { likedSongIds });
+    } catch (error) {
+        console.warn('[AppleMusicLibrary] liked-songs:error', { name: error instanceof Error ? error.name : 'Error' });
     }
 }
 

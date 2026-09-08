@@ -17,15 +17,28 @@ const ERROR_CODES = new Set(['token-service-unavailable', 'developer-token-inval
   'subscription-required', 'authorization-failed', 'authorization-incomplete', 'login-cancelled', 'login-timeout', 'player-port-unavailable', 'invalid-request', 'playback-failed',
   'lyrics-network-error', 'lyrics-service-unavailable']);
 
+// Read paths stay on the public catalog and the user's own library, ratings, history and recommendations.
+const API_PATH = /^\/v1\/(catalog\/[a-z]{2}\/|me\/(storefront|library(\/|\?)|ratings\/|recommendations|recent\/played\/|history\/heavy-rotation))/;
+const API_METHODS = new Set(['GET', 'POST', 'PUT', 'DELETE']);
+
 function validateRequest(action, input = {}) {
-  if (action === 'api' && (typeof input.path !== 'string' || !/^\/v1\/(catalog\/[a-z]{2}\/|me\/(storefront|library\/))/.test(input.path)
-    || /[\x00-\x20'"\\]/.test(input.path) || input.path.includes('..'))) throw new Error('invalid-request');
-  if (action === 'start' && (typeof input.id !== 'string' || !/^[\w.-]+$/.test(input.id))) throw new Error('invalid-request');
+  if (action === 'api') {
+    if (typeof input.path !== 'string' || !API_PATH.test(input.path) || /[\x00-\x20'"\\]/.test(input.path) || input.path.includes('..')) throw new Error('invalid-request');
+    const method = input.method === undefined ? 'GET' : input.method;
+    if (!API_METHODS.has(method)) throw new Error('invalid-request');
+    // Bodies only travel with writes, and only as plain JSON objects the player serializes itself.
+    if (input.body !== undefined && (method === 'GET' || !input.body || typeof input.body !== 'object' || Array.isArray(input.body))) throw new Error('invalid-request');
+  }
+  if ((action === 'start' || action === 'queueNext') && (typeof input.id !== 'string' || !/^[\w.-]+$/.test(input.id))) throw new Error('invalid-request');
+  if (action === 'start') {
+    if (input.bitrate !== undefined && ![64, 256].includes(input.bitrate)) throw new Error('invalid-request');
+    if (input.continueIfCurrent !== undefined && typeof input.continueIfCurrent !== 'boolean') throw new Error('invalid-request');
+  }
   if (action === 'command') {
     if (!['play', 'pause', 'seek', 'volume'].includes(input.command)) throw new Error('invalid-request');
     if (['seek', 'volume'].includes(input.command) && (!Number.isFinite(input.value) || input.value < 0 || (input.command === 'volume' && input.value > 1))) throw new Error('invalid-request');
   }
-  if (!['api', 'start', 'command', 'snapshot', 'connect', 'logout'].includes(action)) throw new Error('invalid-request');
+  if (!['api', 'start', 'queueNext', 'command', 'snapshot', 'connect', 'logout'].includes(action)) throw new Error('invalid-request');
 }
 
 function createAppleMusicHost({ onDiagnostic = () => {}, getParentWindow = () => null }) {

@@ -90,21 +90,40 @@
           return result;
         } catch { throw new Error('lyrics-service-unavailable'); }
       }
-      const response = await music.api.music(input.path);
-      return response.data;
+      // Writes (ratings, library adds, playlist tracks) go through the SDK's authenticated fetch.
+      const write = input.method && input.method !== 'GET';
+      const response = write
+        ? await music.api.music(input.path, undefined, { fetchOptions: { method: input.method, body: input.body === undefined ? undefined : JSON.stringify(input.body) } })
+        : await music.api.music(input.path);
+      // Apple answers accepted writes with 202 and no body.
+      return response?.data ?? {};
     }
+    // Library items need their resource; catalog songs queue by id.
+    const queueDescriptor = async id => (id.startsWith('i.')
+      ? { items: (await music.api.music(`/v1/me/library/songs/${encodeURIComponent(id)}`)).data.data }
+      : { song: id });
+    const itemMatches = (item, id) => Boolean(item) && (item.id === id || (item.attributes?.playParams || item.playParams)?.catalogId === id);
     if (action === 'start') {
       playbackError = false;
       if (!await music.hasMusicSubscription()) throw new Error('subscription-required');
+      // The queue already handed over to this item on its own; reloading it would restart the song.
+      if (input.continueIfCurrent && itemMatches(music.nowPlayingItem, input.id)) {
+        if (!music.isPlaying) await music.play();
+        return true;
+      }
+      if (input.bitrate) music.bitrate = input.bitrate;
       music.autoplayEnabled = false;
       music.repeatMode = 0;
-      const queue = input.id.startsWith('i.')
-        ? { items: (await music.api.music(`/v1/me/library/songs/${encodeURIComponent(input.id)}`)).data.data }
-        : { song: input.id };
+      const queue = await queueDescriptor(input.id);
       await music.setQueue(queue);
       // Explicit selection propagates loading failures that play() can silently swallow.
       await music.changeToMediaAtIndex(0);
       await music.play();
+      return true;
+    }
+    if (action === 'queueNext') {
+      if (itemMatches(music.queue?.nextPlayableItem, input.id)) return true;
+      await music.playLater(await queueDescriptor(input.id));
       return true;
     }
     if (action === 'command') {

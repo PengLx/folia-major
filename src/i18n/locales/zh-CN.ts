@@ -2,6 +2,7 @@
 
 export default {
   "appleMusic": {
+    "librarySongs": "资料库歌曲",
     "desktopRequired": "Apple Music 独立播放需要包含 Widevine 的 Folia 桌面端。",
     "connect": "连接 / 刷新",
     "connected": "已连接 Apple Music。",

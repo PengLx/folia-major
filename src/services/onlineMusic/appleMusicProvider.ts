@@ -7,6 +7,14 @@ import { applePath, getStorefront, hasMusicKit, requestApple } from './appleMusi
 import { removeProviderSessionValue, writeProviderSessionValue } from './providerStorage';
 import { musicKitPlayback } from './appleMusic/playback';
 import { requestMusicKit } from './appleMusic/musicKitTransport';
+import {
+    canResolveAppleSongCatalogRefs, getAppleAlbumDetail, getAppleAlbumTracks, getAppleArtistAlbums, getAppleArtistDetail,
+    getAppleArtistSongs, getAppleLibrarySongs, getAppleUserAlbums, resolveAppleSongCatalogRefs, searchAppleSongsByIsrc,
+} from './appleMusic/catalog';
+import {
+    canEditApplePlaylist, getAppleLikedSongIds, getAppleSubscriptionStatus, likeAppleSong, subscribeAppleCollection, updateApplePlaylistTracks,
+} from './appleMusic/library';
+import { getAppleDailySongs, getApplePersonalFm, getAppleRecommendedCollections } from './appleMusic/recommendations';
 
 // src/services/onlineMusic/appleMusicProvider.ts
 
@@ -14,7 +22,8 @@ export const appleMusicProvider: OnlineMusicProvider = {
     id: 'applemusic', displayName: 'Apple Music', shortName: 'Apple Music',
     getAvailability: () => ({ configured: hasMusicKit(), reason: hasMusicKit() ? undefined : 'runtime-unavailable' }),
     capabilities: { search: true, playback: true, lyrics: true, wordByWordLyrics: true, auth: true,
-        userLibrary: true, playlists: true, albums: false, artists: false, recommendations: false, mutations: false },
+        userLibrary: true, playlists: true, albums: true, artists: true, userAlbums: true, userCloud: true, recommendations: true,
+        mutations: true, likes: true, playlistTrackMutations: true, playlistSubscription: true },
     normalizeSong: normalizeAppleSong, normalizeCollection: normalizeAppleCollection,
     songMetadata: { getSongMetadata: createProviderSongMetadata },
     getSongPageUrl: song => {
@@ -27,7 +36,7 @@ export const appleMusicProvider: OnlineMusicProvider = {
         const params = new URLSearchParams({ term: query, types: 'songs', limit: String(Math.max(1, Math.min(25, limit))), offset: String(offset) });
         const result = await requestApple<{ results: { songs?: ApplePage } }>(`/v1/catalog/${storefront}/search?${params}`);
         return applePage(result.results?.songs || { data: [] }, offset, normalizeAppleSong);
-    } },
+    }, searchSongsByIsrc: searchAppleSongsByIsrc },
     auth: {
         async configureConnection() {
             await requestMusicKit('connect');
@@ -44,10 +53,18 @@ export const appleMusicProvider: OnlineMusicProvider = {
             writeProviderSessionValue('applemusic', 'disconnected', 'true');
         },
     },
-    library: { async getUserPlaylists(_userId, limit, offset) {
-        return applePage(await requestApple<ApplePage>(`/v1/me/library/playlists?limit=${Math.min(100, limit)}&offset=${offset}`), offset, normalizeAppleCollection);
-    } },
+    library: {
+        async getUserPlaylists(_userId, limit, offset) {
+            return applePage(await requestApple<ApplePage>(`/v1/me/library/playlists?limit=${Math.min(100, limit)}&offset=${offset}`), offset, item => normalizeAppleCollection(item, 'playlist'));
+        },
+        getUserAlbums: (_userId, limit, offset) => getAppleUserAlbums(limit, offset),
+        getLikedSongIds: () => getAppleLikedSongIds(),
+        // The collection itself is assembled by the account hook, which owns the localized label.
+        getCloudCollection: async () => null,
+    },
     catalog: {
+        canResolveSongCatalogRefs: canResolveAppleSongCatalogRefs,
+        resolveSongCatalogRefs: resolveAppleSongCatalogRefs,
         async getPlaylistTracks(id, limit, offset) {
             const prefix = String(id).startsWith('p.') ? '/v1/me/library' : `/v1/catalog/${await getStorefront()}`;
             return applePage(await requestApple<ApplePage>(`${prefix}/playlists/${encodeURIComponent(id)}/tracks?limit=${Math.min(100, limit)}&offset=${offset}`), offset, normalizeAppleSong);
@@ -55,8 +72,27 @@ export const appleMusicProvider: OnlineMusicProvider = {
         async getPlaylistDetail(id) {
             const prefix = String(id).startsWith('p.') ? '/v1/me/library' : `/v1/catalog/${await getStorefront()}`;
             const result = await requestApple<ApplePage>(`${prefix}/playlists/${encodeURIComponent(id)}`);
-            return result.data?.[0] ? normalizeAppleCollection(result.data[0]) : null;
+            return result.data?.[0] ? normalizeAppleCollection(result.data[0], 'playlist') : null;
         },
+        getAlbumDetail: getAppleAlbumDetail,
+        getAlbumTracks: getAppleAlbumTracks,
+        getArtistDetail: getAppleArtistDetail,
+        getArtistSongs: getAppleArtistSongs,
+        getArtistAlbums: getAppleArtistAlbums,
+        getCloudTracks: getAppleLibrarySongs,
+        getSubscriptionStatus: getAppleSubscriptionStatus,
+    },
+    recommendations: {
+        getPersonalFm: () => getApplePersonalFm(),
+        getDailySongs: () => getAppleDailySongs(),
+        getRecommendedCollections: getAppleRecommendedCollections,
+    },
+    mutations: {
+        canAddToPlaylist: canEditApplePlaylist,
+        likeSong: likeAppleSong,
+        updatePlaylistTracks: updateApplePlaylistTracks,
+        subscribePlaylist: (playlist, subscribed) => subscribeAppleCollection('playlist', typeof playlist === 'object' ? playlist.id : playlist, subscribed),
+        subscribeAlbum: (id, subscribed) => subscribeAppleCollection('album', id, subscribed),
     },
     playback: {
         remote: musicKitPlayback,

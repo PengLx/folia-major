@@ -2,6 +2,7 @@
 
 export default {
   "appleMusic": {
+    "librarySongs": "Library songs",
     "desktopRequired": "Apple Music mandiri memerlukan Folia desktop dengan Widevine.",
     "connect": "Hubungkan / segarkan",
     "connected": "Terhubung ke Apple Music.",

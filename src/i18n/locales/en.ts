@@ -2,6 +2,7 @@
 
 export default {
   "appleMusic": {
+    "librarySongs": "Library songs",
     "desktopRequired": "Standalone Apple Music requires a Folia desktop build with Widevine.",
     "connect": "Connect / refresh",
     "connected": "Connected to Apple Music.",

@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 async function createPlayer(subscriber = true, validationStatus = 200) {
     const music = { isAuthorized: true, developerToken: 'developer-fixture', musicUserToken: 'user-fixture', authorize: vi.fn(async () => true), hasMusicSubscription: vi.fn(async () => subscriber),
         setQueue: vi.fn(async () => {}), changeToMediaAtIndex: vi.fn(async () => {}), play: vi.fn(async () => {}), addEventListener: vi.fn(),
+        playLater: vi.fn(async () => {}), queue: { nextPlayableItem: null as null | { id: string } }, bitrate: 256,
         pause: vi.fn(async () => {}), seekToTime: vi.fn(async () => {}), volume: 0.4,
         api: { music: vi.fn(async () => ({ data: { data: [{ id: 'i.library', type: 'library-songs' }] } })) },
         nowPlayingItem: { id: '42', attributes: { playParams: { catalogId: '42' } } },
@@ -44,6 +45,37 @@ describe('MusicKit player contract', () => {
         expect(music.api.music).not.toHaveBeenCalled();
         await call('api', { path: '/v1/catalog/us/songs/42' });
         expect(music.api.music).toHaveBeenCalledWith('/v1/catalog/us/songs/42');
+    });
+    it('sends writes through the SDK fetch options and tolerates empty accepted responses', async () => {
+        const { call, music } = await createPlayer();
+        music.api.music.mockResolvedValueOnce({} as never);
+        expect(await call('api', { path: '/v1/me/ratings/songs/42', method: 'PUT', body: { type: 'rating', attributes: { value: 1 } } })).toEqual({});
+        expect(music.api.music).toHaveBeenCalledWith('/v1/me/ratings/songs/42', undefined, { fetchOptions: { method: 'PUT', body: '{"type":"rating","attributes":{"value":1}}' } });
+        await call('api', { path: '/v1/me/ratings/songs/42', method: 'DELETE' });
+        expect(music.api.music).toHaveBeenLastCalledWith('/v1/me/ratings/songs/42', undefined, { fetchOptions: { method: 'DELETE', body: undefined } });
+    });
+    it('applies the requested bitrate before loading and continues an item the queue already reached', async () => {
+        const { call, music } = await createPlayer();
+        await call('start', { id: '7', bitrate: 64 });
+        expect(music.bitrate).toBe(64);
+        expect(music.setQueue).toHaveBeenCalledWith({ song: '7' });
+        music.setQueue.mockClear();
+        music.isPlaying = false;
+        expect(await call('start', { id: '42', continueIfCurrent: true })).toBe(true);
+        expect(music.setQueue).not.toHaveBeenCalled();
+        expect(music.play).toHaveBeenCalled();
+        await call('start', { id: '42' });
+        expect(music.setQueue).toHaveBeenCalledWith({ song: '42' });
+    });
+    it('lines the next song up once and skips when it is already queued', async () => {
+        const { call, music } = await createPlayer();
+        await call('queueNext', { id: '8' });
+        expect(music.playLater).toHaveBeenCalledWith({ song: '8' });
+        music.queue.nextPlayableItem = { id: '8' };
+        await call('queueNext', { id: '8' });
+        expect(music.playLater).toHaveBeenCalledTimes(1);
+        await call('queueNext', { id: 'i.library' });
+        expect(music.playLater).toHaveBeenLastCalledWith({ items: [{ id: 'i.library', type: 'library-songs' }] });
     });
     it('distinguishes missing lyrics from access failures and network errors', async () => {
         const { call, fetch } = await createPlayer();

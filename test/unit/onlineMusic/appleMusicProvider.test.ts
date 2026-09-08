@@ -37,7 +37,7 @@ describe('Apple Music through Omni', () => {
         await omni.startRemotePlayback(song);
         await omni.remotePlaybackCommand(song, 'seek', 32);
         expect(request.mock.calls).toEqual([
-            ['start', { id: 'i.library' }], ['command', { command: 'seek', value: 32 }],
+            ['start', { id: 'i.library', bitrate: 256, continueIfCurrent: false }], ['command', { command: 'seek', value: 32 }],
         ]);
     });
     it('resolves a library song to the catalog before requesting lyrics', async () => {
@@ -83,6 +83,19 @@ describe('standalone MusicKit routing', () => {
         await appleMusicProvider.playback!.remote!.start('42');
         await appleMusicProvider.playback!.remote!.command('seek', 33);
         expect(music.mock.calls.map(call => call[0])).toEqual(['connect', 'start', 'command']);
+    });
+    it('routes bitrate preferences and queued successors through Omni', async () => {
+        request.mockResolvedValue({ ok: true, data: true });
+        const song = normalizeAppleSong(resource);
+        const next = normalizeAppleSong({ ...resource, id: '43' });
+        await omni.startRemotePlayback(song, { quality: 'standard' });
+        await omni.startRemotePlayback(song, { quality: 'lossless', continueIfCurrent: true });
+        await omni.queueRemotePlaybackNext(song, next);
+        expect(request.mock.calls).toEqual([
+            ['start', { id: '42', bitrate: 64, continueIfCurrent: false }],
+            ['start', { id: '42', bitrate: 256, continueIfCurrent: true }],
+            ['queueNext', { id: '43' }],
+        ]);
     });
     it('surfaces credential and DRM errors from the MusicKit host', async () => {
         const music = vi.fn().mockResolvedValue({ ok: false, error: 'developer-token-expired' });
