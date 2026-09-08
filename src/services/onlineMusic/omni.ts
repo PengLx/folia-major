@@ -1,3 +1,4 @@
+import type { RemotePlaybackCommand } from '../../types/remotePlayback';
 import type { SongResult, UnifiedSong } from '../../types';
 import type {
     AudioQualityPreference,
@@ -72,6 +73,31 @@ const withActiveProvider = async <T>(run: (provider: OnlineMusicProvider) => Pro
 };
 
 export const omni = {
+    async configureProviderConnection(providerId: OmniProviderId): Promise<void> {
+        const provider = requireOnlineMusicProvider(providerId);
+        if (!provider.auth?.configureConnection) return unsupported(providerId, 'connection-configuration');
+        await provider.auth.configureConnection();
+    },
+    usesRemotePlayback(song: SongResult | null): boolean {
+        return Boolean(song && getOnlineMusicProviderForSong(song)?.playback?.remote);
+    },
+    async startRemotePlayback(song: SongResult): Promise<void> {
+        const provider = providerForSong(song);
+        const backend = provider.playback?.remote;
+        if (!backend) return unsupported(provider.id, 'remote-playback');
+        const source = getPlaybackSourceRef(song);
+        await backend.start(source.mediaId);
+    },
+    async remotePlaybackCommand(song: SongResult, command: RemotePlaybackCommand, value?: number): Promise<void> {
+        const provider = providerForSong(song);
+        if (!provider.playback?.remote) return unsupported(provider.id, 'remote-playback');
+        await provider.playback.remote.command(command, value);
+    },
+    async getRemotePlaybackSnapshot(song: SongResult) {
+        const provider = providerForSong(song);
+        if (!provider.playback?.remote) return unsupported(provider.id, 'remote-playback');
+        return provider.playback.remote.snapshot();
+    },
     invalidateActiveRequests(): void {
         activeRequestGeneration += 1;
     },
