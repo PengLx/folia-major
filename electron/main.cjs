@@ -185,6 +185,8 @@ const transcodeService = createTranscodeService({
 // KuGou credentials stay inside the main process and are encrypted lazily after Electron is ready.
 // The bridge refuses Linux's plaintext `basic_text` fallback and degrades to an in-memory session.
 const kugouApiBridge = createKugouApiBridge({ store, safeStorage });
+const ciderBridge = require('./ciderBridge.cjs').createCiderBridge({ store, safeStorage });
+const appleMusicHost = require('./appleMusic/host.cjs').createAppleMusicHost({ store, safeStorage, getParentWindow: () => mainWindow });
 const qqAuthSessionRepository = createQqAuthSessionRepository({ store, safeStorage });
 
 // --- Desktop wallpaper mode (Wayland layer-shell via windowtolayer / X11 desktop window) ---
@@ -1945,8 +1947,9 @@ function readStoredBoolean(settingKey, fallback = false) {
 }
 
 function getPublicSettings() {
+  const { appleMusic: _appleMusicPrivateSettings, ...publicStore } = store.store;
   return {
-    ...store.store,
+    ...publicStore,
     [MINIMIZE_TO_TRAY_SETTING_KEY]: readStoredBoolean(MINIMIZE_TO_TRAY_SETTING_KEY, false),
     [HIDE_TASKBAR_ICON_SETTING_KEY]: readStoredBoolean(HIDE_TASKBAR_ICON_SETTING_KEY, false),
     [REMOTE_CONTROL_ALWAYS_ON_TOP_SETTING_KEY]: readStoredBoolean(REMOTE_CONTROL_ALWAYS_ON_TOP_SETTING_KEY, true),
@@ -6197,6 +6200,19 @@ ipcMain.handle('obs-browser-source-publish-audio', (event, audio) => {
     broadcastObsBrowserSourceEvent('audio', latestObsBrowserSourceAudio);
   }
   return true;
+});
+
+ipcMain.handle('cider-request', (event, request) => {
+  if (!isTrustedMainWindowContents(event.sender)) throw new Error('Untrusted Cider request');
+  return ciderBridge.request(request);
+});
+ipcMain.handle('apple-music-request', (event, action, input) => {
+  if (!isTrustedMainWindowContents(event.sender) || event.senderFrame !== event.sender.mainFrame) throw new Error('Untrusted Apple Music request');
+  return appleMusicHost.request(action, input);
+});
+ipcMain.handle('cider-configure', (event, token) => {
+  if (!isTrustedMainWindowContents(event.sender)) throw new Error('Untrusted Cider configuration');
+  return ciderBridge.configure(token);
 });
 
 ipcMain.handle('lyric-api-get-status', (event) => {

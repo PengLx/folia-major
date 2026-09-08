@@ -1,6 +1,9 @@
 const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
+    ciderRequest: (request) => ipcRenderer.invoke('cider-request', request),
+    appleMusicRequest: (action, input) => ipcRenderer.invoke('apple-music-request', action, input),
+    ciderConfigure: (token) => ipcRenderer.invoke('cider-configure', token),
     webUtils: {
       // File.path was removed in modern Electron; this is the supported way to
       // resolve the OS path of a dropped file from the renderer.

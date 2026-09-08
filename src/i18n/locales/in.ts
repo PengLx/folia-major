@@ -1,6 +1,39 @@
 
 
 export default {
+  "appleMusic": {
+    "setup": "Buka Cider dan masuk ke Apple Music. Aktifkan API lokal di Connectivity. Biarkan Cider berjalan saat mendengarkan di Folia. Pemutaran dan kualitas audio ditangani Cider.",
+    "desktopRequired": "Apple Music mandiri memerlukan Folia desktop dengan Widevine.",
+    "token": "Token aplikasi Cider (opsional)",
+    "tokenHint": "Kosongkan untuk menggunakan token tersimpan",
+    "connect": "Hubungkan / segarkan",
+    "connected": "Terhubung ke Apple Music.",
+    "connectionError": "Koneksi Apple Music gagal. Periksa jaringan, token pengembang dan akun.",
+    "playbackError": "Pemutaran Apple Music gagal. Periksa akun, langganan dan pemutar.",
+    "mode": "Mode pemutaran",
+    "standalone": "Putar langsung di Folia",
+    "standaloneSetup": "Masuk dengan akun Apple Anda. Pemutaran penuh memerlukan langganan Apple Music aktif.",
+    "developerToken": "Token pengembang MusicKit (JWT)",
+    "librarySongs": "Library songs",
+    "signIn": "Masuk ke Apple Music",
+    "errors": {
+        "developer-token-rejected": "Apple menolak kredensial aplikasi versi Folia ini. Hubungi pengelola; masuk ulang tidak akan memperbaikinya.",
+        "authorization-failed": "Masuk ke Apple belum menyelesaikan otorisasi Folia. Silakan coba lagi.",
+        "authorization-incomplete": "Apple belum mengonfirmasi otorisasi. Silakan masuk lagi.",
+        "token-service-unavailable": "Layanan masuk Apple Music sementara tidak tersedia. Coba lagi nanti.",
+        "developer-token-required": "Apple Music belum dikonfigurasi dalam versi Folia ini. Hubungi pengelola.",
+        "developer-token-invalid": "Konfigurasi Apple Music tidak valid. Hubungi pengelola Folia.",
+        "developer-token-expired": "Konfigurasi Apple Music Folia telah kedaluwarsa. Perbarui Folia atau coba lagi nanti.",
+        "widevine-unavailable": "This runtime has no Widevine. Use a Folia desktop build with Apple Music support.",
+        "credential-storage-unavailable": "System credential storage is unavailable. The token could not be saved securely.",
+        "login-cancelled": "Sign-in cancelled.",
+        "login-timeout": "Sign-in timed out. Please reconnect.",
+        "player-port-unavailable": "The Apple Music player port is in use. Close the other Folia instance.",
+        "musickit-load-failed": "MusicKit could not load. Check your network and retry.",
+        "auth-required": "Please sign in to Apple Music.",
+        "subscription-required": "Full playback requires an active Apple Music subscription."
+    }
+},
   "notifications": {
     "coverColorAdded": "Warna sampul ditambahkan",
     "coverColorDefault": "Menggunakan warna bawaan",
@@ -898,7 +931,7 @@ export default {
     "switchOnlineProvider": "Ganti penyedia musik online",
     "confirmOnlineProviderSwitch": "Ganti ke {{provider}}? Pemutaran online dan antrean saat ini akan dihapus.",
     "onlineProvider": "Penyedia musik online",
-    "providerNotLoggedIn": "Belum login · klik untuk pindai",
+    "providerNotLoggedIn": "Belum login · klik untuk masuk",
     "providerNotConfigured": "API tidak dikonfigurasi untuk Web",
     "loadingQr": "Memuat QR...",
     "scanQr": "Silakan pindai kode QR",

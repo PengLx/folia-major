@@ -601,6 +601,9 @@ declare global {
 
   interface Window {
     electron?: {
+      ciderRequest?: (request: { path: string; body?: Record<string, unknown> }) => Promise<{ status: number; data: unknown }>;
+      ciderConfigure: (token: string) => Promise<boolean>;
+      appleMusicRequest?: (action: string, input?: Record<string, unknown>) => Promise<{ ok: boolean; data?: unknown; error?: string }>;
       webUtils?: {
         /** Resolves the OS path of a dropped File (File.path was removed in modern Electron). */
         getPathForFile: (file: File) => string;
